@@ -489,7 +489,7 @@ public class ArticleServiceImpl {
     }
 
     //得到freemarker模版文件所需参数
-    public Map<String, Object> getTemplateParams(int artid, String contextPath) {
+    public Map<String, Object> getTemplateParams(int artid, String contextPath, boolean isNew) {
         try {
             // 设置事务隔离级别
             JdbcUtils
@@ -501,9 +501,12 @@ public class ArticleServiceImpl {
             List<Article> articles = articleDao.queryArticleBySQL("select time,looked,likes,artid,title,cid,staticURL from article where artid=?", new Object[]{artid});
             if (articles.size() <= 0)
                 return null;
-            //增加访问量
-            articles.get(0).setLooked(articles.get(0).getLooked() + 1);
-            articleDao.updateArticleInfo(articles.get(0));
+
+            if(isNew) {
+                //增加访问量
+                articles.get(0).setLooked(articles.get(0).getLooked() + 1);
+                articleDao.updateArticleInfo(articles.get(0));
+            }
 
             //最新三篇文章
             List<Article> lastArticles = null;

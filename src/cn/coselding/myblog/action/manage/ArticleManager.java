@@ -9,13 +9,11 @@ import cn.coselding.myblog.service.impl.ArticleServiceImpl;
 import cn.coselding.myblog.utils.TemplateUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.dispatcher.ServletRedirectResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -299,7 +297,7 @@ public class ArticleManager extends ActionSupport {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
         //填充模版信息
-        Map<String, Object> params = service.getTemplateParams(artid, request.getContextPath());
+        Map<String, Object> params = service.getTemplateParams(artid, request.getContextPath(), true);
         if (params == null) {
             request.setAttribute("message", "文章不存在");
             request.setAttribute("url", request.getContextPath() + "/manage/comment.action");

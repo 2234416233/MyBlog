@@ -2,10 +2,12 @@ package cn.coselding.myblog.filter;
 
 import cn.coselding.myblog.service.impl.ArticleServiceImpl;
 import cn.coselding.myblog.utils.TemplateUtils;
+import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -16,6 +18,8 @@ import java.util.regex.Pattern;
  * Created by 宇强 on 2016/3/13 0013.
  */
 public class ArticleViewFilter implements Filter {
+
+    public static final String ARTICLE_VIEW_TOKEN = "view";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -56,8 +60,20 @@ public class ArticleViewFilter implements Filter {
         //获取模版填充所需信息
         ArticleServiceImpl service = new ArticleServiceImpl();
 
+        //防止同一用户session添加多次访问量
+        boolean isNew = false;
+        //获取当前用户session
+        HttpSession session = request.getSession();
+        //还没看过就能添加访问量
+        if(session.getAttribute(ARTICLE_VIEW_TOKEN)==null) {
+            isNew = true;
+
+            //设置当前的用户session已经看过文章了
+            session.setAttribute(ARTICLE_VIEW_TOKEN, "true");
+        }
+
         //填充模版信息
-        Map<String,Object> params = service.getTemplateParams(artid, request.getContextPath());
+        Map<String,Object> params = service.getTemplateParams(artid, request.getContextPath(),isNew);
 
         boolean result =  TemplateUtils.parserTemplate(realPath+File.separator+"blog", matcher.group(1)+"/"+matcher.group(2)+"-"+matcher.group(3)+".ftl", params, response.getOutputStream());
         if(!result){

@@ -4,10 +4,16 @@ import cn.coselding.myblog.service.impl.VisitorServiceImpl;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.ServletActionContext;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+import java.util.Map;
+
 /**
  * Created by 宇强 on 2016/3/13 0013.
  */
 public class LikeAction extends ActionSupport{
+
+    public static final String LIKE_TOKEN = "like";
 
     private int artid;
 
@@ -21,9 +27,18 @@ public class LikeAction extends ActionSupport{
 
     @Override
     public String execute() throws Exception {
-        //刷新数据库
-        VisitorServiceImpl service = new VisitorServiceImpl();
-        int likes =  service.likeArticle(artid);
+
+        //获取当前用户session
+        HttpSession session = ServletActionContext.getRequest().getSession();
+        //还没like过就能like
+        if(session.getAttribute(LIKE_TOKEN)==null) {
+            //刷新数据库
+            VisitorServiceImpl service = new VisitorServiceImpl();
+            int likes = service.likeArticle(artid);
+
+            //设置当前的用户session已经like过了
+            session.setAttribute(LIKE_TOKEN, "true");
+        }
 
         //获取请求前的页面
         String referer = ServletActionContext.getRequest().getHeader("referer");
