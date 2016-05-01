@@ -94,7 +94,7 @@
             </div>
             &nbsp;&nbsp;
             <div>
-                <a id="likes" href="${likesURL}"><i class="icon-heart-empty"></i> ${likes} 喜爱</a>
+                <a id="likes" href="javascript:like('${#contextPath#}/likeAction.action?artid=${artid}')"><i class="icon-heart-empty"></i> ${likes} 喜爱</a>
             </div>
             <a class="comment-btn" href="javascript:onComment('${#addComment#}')"><i class="icon-comments"></i> 给我留言</a>
         </div>
@@ -163,6 +163,39 @@
 
 <script type="text/javascript" src="${#contextPath#}/style/js/scripts.js"></script>
 <script type="text/javascript">
+    window.onload = function(){
+        like("${#contextPath#}/likeAction_getData.action?artid=${artid}");
+    };
+
+    function like(url){
+        var xmlhttp;
+        if (window.XMLHttpRequest)
+        {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {// code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                var text = xmlhttp.responseText.split(";");
+
+                var looked = document.getElementById("looked");
+                looked.innerHTML = "<i class='icon-eye-open'></i> "+text[0]+" 已阅";
+
+                var likes = document.getElementById("likes");
+                likes.innerHTML = "<i class='icon-heart-empty'></i> "+text[1]+" 喜爱";
+            }
+        }
+
+        xmlhttp.open("GET",url,true);
+        xmlhttp.send();
+    }
+
     function onComment(url){
         var form = document.createElement('form');
         form.action = url;

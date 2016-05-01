@@ -557,6 +557,7 @@ public class ArticleServiceImpl {
             //封装模版所需参数
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("looked", articles.get(0).getLooked());
+            params.put("artid", artid);
             params.put("likes", articles.get(0).getLikes());
             params.put("lastArticlesList", lastArticles);
             params.put("categoryList", categories);

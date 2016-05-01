@@ -163,4 +163,27 @@ public class VisitorServiceImpl {
             JdbcUtils.release();
         }
     }
+
+    //文章的浏览数和喜爱数
+    public Article getData(int artid){
+        try {
+            // 设置事务隔离级别
+            JdbcUtils
+                    .setTransactionIsolation(JdbcUtils.TRANSACTION_READ_COMMITTED);
+            // 开启事务
+            JdbcUtils.startTransaction();
+            //只读
+            JdbcUtils.setReadOnly();
+
+            Article article = articleDao.queryArticleInfo(artid);
+            JdbcUtils.commit();
+            return article;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JdbcUtils.rollback();
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtils.release();
+        }
+    }
 }

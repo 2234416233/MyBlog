@@ -44,7 +44,7 @@
         <div class="post format-image box">
           <div class="details">
             <span class="icon-image">${fn:substring(art.time,0,16)}</span>
-            <span class="likes"><a href="${pageContext.request.contextPath}/likeAction.action?artid=${art.artid}"
+            <span class="likes"><a href="#"
                                    class="likeThis">${art.likes}</a></span>
             <span class="comments"><a href="#">${art.looked}</a></span>
           </div>

@@ -65,11 +65,11 @@ public class ArticleViewFilter implements Filter {
         //获取当前用户session
         HttpSession session = request.getSession();
         //还没看过就能添加访问量
-        if(session.getAttribute(ARTICLE_VIEW_TOKEN)==null) {
+        if(session.getAttribute(ARTICLE_VIEW_TOKEN+artid)==null) {
             isNew = true;
 
             //设置当前的用户session已经看过文章了
-            session.setAttribute(ARTICLE_VIEW_TOKEN, "true");
+            session.setAttribute(ARTICLE_VIEW_TOKEN+artid, "true");
         }
 
         //填充模版信息
