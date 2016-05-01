@@ -18,6 +18,23 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class WebUtils {
 
+	/**格式化日期
+	 * @param date
+	 * @return
+	 */
+	public static String toDateString(Date date){
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		return format.format(date);
+	}
+
+	/**格式化日期和时分
+	 * @param date
+	 * @return
+	 */
+	public static String toDateTimeString(Date date){
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+		return format.format(date);
+	}
 	/**
 	 * 将request中的数据封装到javabean中
 	 *
