@@ -222,7 +222,7 @@ public class ArticleServiceImpl {
             Global.setCategories_cached(false);
 
             //静态化路径
-            article.setStaticURL("/blog/" + article.getCid() + "/" + article.getCid() + "-" + artid);
+            article.setStaticURL(article.staticPath());
 
             Category category = categoryDao.queryCategory(article.getCid());
             ServiceUtils.staticPage(article, contextPath, category, realPath);
@@ -466,7 +466,7 @@ public class ArticleServiceImpl {
             ServiceUtils.staticPage(article, contextPath, category, realPath);
 
             //储存静态化页面路径
-            article.setStaticURL("/blog/" + article.getCid() + "/" + article.getCid() + "-" + article.getArtid());
+            article.setStaticURL(article.staticPath());
             articleDao.updateArticleInfo(article);
 
             //查询已订阅的用户

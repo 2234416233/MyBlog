@@ -23,6 +23,10 @@ public class Article {
     private int top = 0;
     private String cname;
 
+    public String staticPath(){
+        return "/blog/" + getCid() + "/" + getCid() + "-" + artid;
+    }
+
     public String getCname() {
         return cname;
     }
