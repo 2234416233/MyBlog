@@ -95,13 +95,33 @@ public class ServiceUtils {
             result = result.replace("${#contextPath#}", contextPath)
                     .replace("${#listArticle#}", contextPath + "/listArticle.action")
                     .replace("${#addComment#}",contextPath+"/commentUI.action")
-                    .replace("#${#rssBlog#}", contextPath + "/rssBlogUI.action")
+                    .replace("${#rssBlog#}", contextPath + "/rssBlogUI.action")
                     .replace("${#listCategoryArticle#}", contextPath+"/listArticle.action?cid="+article.getCid())
                     .replace("${#searchUrl#}",contextPath+"/search.action");
 
             //写入到目标文件中
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(result.getBytes("UTF-8"));
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    /*
+    全静态化页面，将页面中的稳定数据事先静态化，正则表达式实现
+     */
+    public static void staticPage(String realPath,Map<String,Object> params) {
+        Article article = (Article) params.get("article");
+        //静态化页面
+        String path = realPath + File.separator + article.getCid() + File.separator + article.getCid() + "-" + article.getArtid() + ".html";
+        try {
+            //创建，得到文件体
+            File dir = new File(realPath + File.separator + article.getCid());
+            if(!dir.exists())
+                dir.mkdir();
+
+            FileOutputStream fos = new FileOutputStream(path);
+            TemplateUtils.parserTemplate(realPath, "/template/template.ftl", params, fos);
             fos.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

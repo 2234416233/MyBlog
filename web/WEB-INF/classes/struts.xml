@@ -53,7 +53,8 @@
                 <action name="notRss" class="cn.coselding.myblog.action.RssBlogAction" method="notRss">
                 </action>
                 <!-- 访客喜欢文章 -->
-                <action name="likeAction" class="cn.coselding.myblog.action.LikeAction">
+                <action name="likeAction_*" class="cn.coselding.myblog.action.LikeAction" method="{1}">
+                    <param name="method">{1}</param>
                 </action>
         </package>
         <package name="manage" namespace="/manage" extends="struts-default">

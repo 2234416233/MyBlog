@@ -24,7 +24,7 @@ public class Article {
     private String cname;
 
     public String staticPath(){
-        return "/blog/" + getCid() + "/" + getCid() + "-" + artid;
+        return getCid() + "/" + getCid() + "-" + artid;
     }
 
     public String getCname() {

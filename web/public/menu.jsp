@@ -31,5 +31,7 @@
   <br/>
   <a href="${pageContext.request.contextPath}/manage/comment.action" target="body">留言管理</a><br/>
     ----<a href="${pageContext.request.contextPath}/manage/comment_addui.action" target="body">添加留言</a><br/>
+  <br/>
+<a href="${pageContext.request.contextPath}/manage/article_index.action" target="body">静态化主页</a>
 </body>
 </html>

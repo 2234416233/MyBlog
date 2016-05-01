@@ -12,6 +12,6 @@
     <title>Coselding博客</title>
   </head>
   <body>
-  <jsp:forward page="${pageContext.request.contextPath}/index.action"></jsp:forward>
+  <jsp:forward page="/index.html"></jsp:forward>
   </body>
 </html>

@@ -33,7 +33,7 @@ public class ArticleViewFilter implements Filter {
 
         String path = request.getRequestURL().toString();
         //模式匹配
-        Pattern pattern = Pattern.compile("/blog/([0-9]+)/([0-9]+)-([0-9]+)");
+        Pattern pattern = Pattern.compile("-([0-9]+)\\.");
         Matcher matcher = pattern.matcher(path);
 
         //不匹配，路径不正确
@@ -42,45 +42,28 @@ public class ArticleViewFilter implements Filter {
             response.sendError(404,"您输入路径的不存在！");
             return;
         }
-        //模版文件绝对路径
-        String realPath = request.getServletContext().getRealPath("/");
-        //文件路径
-        String filePath = realPath+matcher.group()+".ftl";
-        //查看服务器资源是否存在
-        File file = new File(filePath);
-        if(!file.exists()){
-            //路径不对，报错404
-            response.sendError(404,"您输入路径的不存在！");
-            return;
-        }
-        //解析路径中的文章id
-        int artid = Integer.parseInt(matcher.group(3));
-        System.out.println("artid = "+artid);
 
-        //获取模版填充所需信息
-        ArticleServiceImpl service = new ArticleServiceImpl();
+        //解析路径中的文章id
+        int artid = Integer.parseInt(matcher.group(1));
 
         //防止同一用户session添加多次访问量
         boolean isNew = false;
         //获取当前用户session
         HttpSession session = request.getSession();
         //还没看过就能添加访问量
-        if(session.getAttribute(ARTICLE_VIEW_TOKEN)==null) {
+        if(session.getAttribute(ARTICLE_VIEW_TOKEN+artid)==null) {
             isNew = true;
 
             //设置当前的用户session已经看过文章了
-            session.setAttribute(ARTICLE_VIEW_TOKEN, "true");
+            session.setAttribute(ARTICLE_VIEW_TOKEN+artid, "true");
         }
 
-        //填充模版信息
-        Map<String,Object> params = service.getTemplateParams(artid, request.getContextPath(),isNew);
-
-        boolean result =  TemplateUtils.parserTemplate(realPath+File.separator+"blog", matcher.group(1)+"/"+matcher.group(2)+"-"+matcher.group(3)+".ftl", params, response.getOutputStream());
-        if(!result){
-            //服务器异常
-            response.sendError(500,"服务器未知异常！");
+        if(isNew){
+            ArticleServiceImpl service = new ArticleServiceImpl();
+            service.lookArticle(artid);
         }
-        response.getOutputStream().close();
+
+        filterChain.doFilter(request,response);
     }
 
     @Override

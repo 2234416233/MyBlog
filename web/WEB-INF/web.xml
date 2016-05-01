@@ -31,6 +31,7 @@
         <url-pattern>*.htm</url-pattern>
     </filter-mapping>
 
+
     <!-- 全站不缓存动态页面过滤器 -->
     <filter>
         <filter-name>NoCacheFilter</filter-name>
@@ -89,6 +90,6 @@
     </filter-mapping>
 	
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.action</welcome-file>
     </welcome-file-list>
 </web-app>

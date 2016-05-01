@@ -6,6 +6,7 @@ import cn.coselding.myblog.domain.Page;
 import cn.coselding.myblog.domain.User;
 import cn.coselding.myblog.interceptor.LoginInterceptor;
 import cn.coselding.myblog.service.impl.ArticleServiceImpl;
+import cn.coselding.myblog.utils.ServiceUtils;
 import cn.coselding.myblog.utils.TemplateUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.ServletActionContext;
@@ -14,9 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -188,7 +191,11 @@ public class ArticleManager extends ActionSupport {
 
         //保存博文
         ArticleServiceImpl service = new ArticleServiceImpl();
-        service.addArticle(article, ServletActionContext.getRequest().getContextPath(), ServletActionContext.getServletContext().getRealPath("/blog"));
+        article = service.addArticle(article,ServletActionContext.getRequest().getContextPath(), ServletActionContext.getServletContext().getRealPath("/blog"));
+
+        //静态化页面
+        Map<String,Object> params = service.getTemplateParams(article.getArtid(), ServletActionContext.getRequest().getContextPath());
+        ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
 
         request.setAttribute("message", "博文录入成功！！！");
         request.setAttribute("url", request.getContextPath() + "/manage/article.action");
@@ -232,6 +239,10 @@ public class ArticleManager extends ActionSupport {
         Article article = initUpdateArticle();
         article.setArtid(artid);
         service.updateArticle(article, ServletActionContext.getRequest().getContextPath(), ServletActionContext.getServletContext().getRealPath("/blog"));
+
+        //静态化页面
+        Map<String,Object> params = service.getTemplateParams((int) artid, ServletActionContext.getRequest().getContextPath());
+        ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
 
         request.setAttribute("message", "博文修改成功！！！");
         request.setAttribute("url", request.getContextPath() + "/manage/article.action");
@@ -297,7 +308,7 @@ public class ArticleManager extends ActionSupport {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
         //填充模版信息
-        Map<String, Object> params = service.getTemplateParams(artid, request.getContextPath(), true);
+        Map<String, Object> params = service.getTemplateParams(artid, request.getContextPath());
         if (params == null) {
             request.setAttribute("message", "文章不存在");
             request.setAttribute("url", request.getContextPath() + "/manage/comment.action");
@@ -332,6 +343,24 @@ public class ArticleManager extends ActionSupport {
         service.reloadAllArticles(request.getContextPath(), request.getServletContext().getRealPath("/blog"));
 
         request.setAttribute("message", "所有博文重新静态化成功！！！");
+        request.setAttribute("url", request.getContextPath() + "/manage/article.action");
+        return "message";
+    }
+
+    public String index()throws Exception{
+        HttpServletRequest request = ServletActionContext.getRequest();
+
+        String realPath = request.getRealPath("/");
+        //查询首页所需动态信息
+        Map<String,Object> params = new ArticleServiceImpl()
+                .getArticleListParams(request.getContextPath());
+        params.put("contextPath",request.getContextPath());
+        //静态化到html文件中
+        FileOutputStream fos = new FileOutputStream(realPath+"/index.html");
+        TemplateUtils.parserTemplate(realPath + "/WEB-INF/ftl", "/index.ftl",params,fos);
+        fos.close();
+
+        request.setAttribute("message", "主页静态化成功！！！");
         request.setAttribute("url", request.getContextPath() + "/manage/article.action");
         return "message";
     }

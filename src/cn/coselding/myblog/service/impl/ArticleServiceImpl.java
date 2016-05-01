@@ -11,9 +11,7 @@ import cn.coselding.myblog.domain.Guest;
 import cn.coselding.myblog.domain.Page;
 import cn.coselding.myblog.email.JavaMailWithAttachment;
 import cn.coselding.myblog.exception.ForeignKeyException;
-import cn.coselding.myblog.utils.Global;
-import cn.coselding.myblog.utils.JdbcUtils;
-import cn.coselding.myblog.utils.ServiceUtils;
+import cn.coselding.myblog.utils.*;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -199,14 +197,13 @@ public class ArticleServiceImpl {
     }
 
     //添加文章，半静态化，邮件通知订阅用户
-    public boolean addArticle(Article article, String contextPath, String realPath) {
+    public Article addArticle(Article article, String contextPath, String realPath) {
         try {
             // 设置事务隔离级别
             JdbcUtils
                     .setTransactionIsolation(JdbcUtils.TRANSACTION_READ_COMMITTED);
             // 开启事务
             JdbcUtils.startTransaction();
-            boolean result = true;
 
             //保存数据库
             long artid = articleDao.saveArticle(article);
@@ -222,10 +219,7 @@ public class ArticleServiceImpl {
             Global.setCategories_cached(false);
 
             //静态化路径
-            article.setStaticURL(article.staticPath());
-
-            Category category = categoryDao.queryCategory(article.getCid());
-            ServiceUtils.staticPage(article, contextPath, category, realPath);
+            article.setStaticURL("/blog/" + article.getCid() + "/" + article.getCid() + "-" + artid);
 
             //储存静态化页面路径
             articleDao.updateArticleInfo(article);
@@ -238,7 +232,7 @@ public class ArticleServiceImpl {
 
             //发送邮件
             JavaMailWithAttachment.getInstance().sendRSS(article,guests,contextPath,true);
-            return result;
+            return article;
         } catch (SQLException e) {
             e.printStackTrace();
             JdbcUtils.rollback();
@@ -462,11 +456,10 @@ public class ArticleServiceImpl {
             Global.setCategories(list);
             Global.setCategories_cached(false);
 
-            Category category = categoryDao.queryCategory(article.getCid());
-            ServiceUtils.staticPage(article, contextPath, category, realPath);
+            //静态化路径
+            article.setStaticURL("/blog/" + article.getCid() + "/" + article.getCid() + "-" + article.getArtid());
 
             //储存静态化页面路径
-            article.setStaticURL(article.staticPath());
             articleDao.updateArticleInfo(article);
 
             //查询已订阅的用户
@@ -489,7 +482,7 @@ public class ArticleServiceImpl {
     }
 
     //得到freemarker模版文件所需参数
-    public Map<String, Object> getTemplateParams(int artid, String contextPath, boolean isNew) {
+    public Map<String, Object> getTemplateParams(int artid, String contextPath) {
         try {
             // 设置事务隔离级别
             JdbcUtils
@@ -497,16 +490,14 @@ public class ArticleServiceImpl {
             // 开启事务
             JdbcUtils.startTransaction();
 
+
             //要看的文章
-            List<Article> articles = articleDao.queryArticleBySQL("select time,looked,likes,artid,title,cid,staticURL from article where artid=?", new Object[]{artid});
+            List<Article> articles = articleDao.queryArticleBySQL("select * from article where artid=?", new Object[]{artid});
             if (articles.size() <= 0)
                 return null;
 
-            if(isNew) {
-                //增加访问量
-                articles.get(0).setLooked(articles.get(0).getLooked() + 1);
-                articleDao.updateArticleInfo(articles.get(0));
-            }
+            //本文章的类别
+            Category category = categoryDao.queryCategory(articles.get(0).getCid());
 
             //最新三篇文章
             List<Article> lastArticles = null;
@@ -554,16 +545,24 @@ public class ArticleServiceImpl {
                 last.setStaticURL(contextPath + last.getStaticURL() + ".html");
             }
 
+            String typeString = "";
+            if(articles.get(0).getType().equals("原创")){
+                String url = ConfigUtils.getProperty("host")+contextPath+articles.get(0).getStaticURL()+".html";
+                typeString = "<p>本文为博主原创，允许转载，但请声明原文地址：<a href=\""+url+"\">"+url+"</a></p>";
+            }
+
             //封装模版所需参数
             Map<String, Object> params = new HashMap<String, Object>();
-            params.put("looked", articles.get(0).getLooked());
-            params.put("likes", articles.get(0).getLikes());
+            params.put("article", articles.get(0));
             params.put("lastArticlesList", lastArticles);
             params.put("categoryList", categories);
-            params.put("likesURL", contextPath + "/likeAction.action?artid=" + artid);
             params.put("nextArticle", next);
             params.put("lastArticle", last);
-            params.put("staticURL", articles.get(0).getStaticURL());
+            params.put("category", category);
+            params.put("time", WebUtils.toDateTimeString(articles.get(0).getTime()));
+            params.put("typeString", typeString);
+            params.put("contextPath", contextPath);
+            params.put("staticURL", articles.get(0).staticPath());
 
             //提交事务
             JdbcUtils.commit();
@@ -574,6 +573,87 @@ public class ArticleServiceImpl {
             throw new RuntimeException(e);
         } finally {
             JdbcUtils.release();
+        }
+    }
+
+    //得到freemarker模版文件所需参数,没有事务管理
+    public Map<String, Object> getTemplateParams1(int artid, String contextPath) {
+        try {
+            //要看的文章
+            List<Article> articles = articleDao.queryArticleBySQL("select * from article where artid=?", new Object[]{artid});
+            if (articles.size() <= 0)
+                return null;
+
+            //本文章的类别
+            Category category = categoryDao.queryCategory(articles.get(0).getCid());
+
+            //最新三篇文章
+            List<Article> lastArticles = null;
+            //先查缓存
+            if (Global.isIsLast())
+                lastArticles = Global.getLastArticles();
+            else {
+                lastArticles = articleDao.queryArticleBySQL("select title,time,artid,cid,staticURL from article order by time desc limit 0,3", null);
+                Global.setLastArticles(lastArticles);
+                Global.setIsLast(false);
+            }
+
+            //所有类别
+            List<Category> categories = null;
+            //先查缓存
+            if (Global.isCategories_cached())
+                categories = Global.getCategories();
+            else {
+                categories = categoryDao.queryAll();
+                Global.setCategories(categories);
+                Global.setCategories_cached(false);
+            }
+
+            //下一篇
+            Article next = null;
+            List<Article> nextArticles = articleDao.queryArticleBySQL("select title,time,artid,cid,staticURL from article where time>? order by time asc limit 0,3", new Object[]{articles.get(0).getTime()});
+            if (nextArticles == null || nextArticles.size() <= 0) {
+                next = new Article();
+                next.setStaticURL("#");
+                next.setTitle("这是最后一篇了哦！");
+            } else {
+                next = nextArticles.get(0);
+                next.setStaticURL(contextPath + next.getStaticURL() + ".html");
+            }
+
+            //上一篇文章
+            Article last = null;
+            List<Article> lastAs = articleDao.queryArticleBySQL("select title,time,artid,cid,staticURL from article where time<? order by time desc limit 0,3", new Object[]{articles.get(0).getTime()});
+            if (lastAs == null || lastAs.size() <= 0) {
+                last = new Article();
+                last.setStaticURL("#");
+                last.setTitle("这是第一篇哦！");
+            } else {
+                last = lastAs.get(0);
+                last.setStaticURL(contextPath + last.getStaticURL() + ".html");
+            }
+
+            String typeString = "";
+            if(articles.get(0).getType().equals("原创")){
+                String url = ConfigUtils.getProperty("host")+contextPath+articles.get(0).getStaticURL()+".html";
+                typeString = "<p>本文为博主原创，允许转载，但请声明原文地址：<a href=\""+url+"\">"+url+"</a></p>";
+            }
+
+            //封装模版所需参数
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("article", articles.get(0));
+            params.put("lastArticlesList", lastArticles);
+            params.put("categoryList", categories);
+            params.put("nextArticle", next);
+            params.put("lastArticle", last);
+            params.put("category", category);
+            params.put("time", WebUtils.toDateTimeString(articles.get(0).getTime()));
+            params.put("typeString", typeString);
+            params.put("contextPath", contextPath);
+            params.put("staticURL", articles.get(0).staticPath());
+            return params;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -653,10 +733,9 @@ public class ArticleServiceImpl {
                 List<Article> arts = articleDao.queryArticleBySQL("select * from article limit ?,?;", new Object[]{page.getStartindex(), page.getPagesize()});
                 //遍历页中的所有文章
                 for(Article a :arts){
-                    //查询文章类型
-                    Category category = categoryDao.queryCategory(a.getCid());
+                    Map<String,Object> params = getTemplateParams1(a.getArtid(), contextPath);
                     //静态化页面
-                    ServiceUtils.staticPage(a, contextPath, category, realPath);
+                    ServiceUtils.staticPage(realPath,params);
                 }
             }
 
@@ -684,14 +763,36 @@ public class ArticleServiceImpl {
 
             Article article = articleDao.queryArticle(artid);
             //静态化页面
-            Category category = categoryDao.queryCategory(article.getCid());
-            ServiceUtils.staticPage(article, contextPath, category, realPath);
+            Map<String,Object> params = getTemplateParams1(article.getArtid(),contextPath);
+            ServiceUtils.staticPage(realPath,params);
 
             //提交事务
             JdbcUtils.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            JdbcUtils.rollback();
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtils.release();
+        }
+    }
+
+    public void lookArticle(int artid){
+        try {
+            // 设置事务隔离级别
+            JdbcUtils
+                    .setTransactionIsolation(JdbcUtils.TRANSACTION_READ_COMMITTED);
+            // 开启事务
+            JdbcUtils.startTransaction();
+
+            Article article = articleDao.queryArticleInfo(artid);
+            article.setLooked(article.getLooked()+1);
+            articleDao.updateArticleInfo(article);
+
+            //提交事务
+            JdbcUtils.commit();
+        } catch (SQLException e) {
             JdbcUtils.rollback();
             throw new RuntimeException(e);
         } finally {
