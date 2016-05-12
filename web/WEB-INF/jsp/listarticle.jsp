@@ -53,7 +53,7 @@
                 </div>
                 <h1 class="title">&nbsp;<div style="color: red;">${art.top==1?'[顶置]':''}</div>&nbsp;<a href="${pageContext.request.contextPath}${art.staticURL}.html">${art.title}</a></h1>
 
-                <p>${art.meta}</p>
+                <%--<p>${art.meta}</p>--%>
 
                 <div class="tags"><a href="#">${art.type}</a></div>
                 <div class="post-nav">
