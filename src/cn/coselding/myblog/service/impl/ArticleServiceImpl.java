@@ -289,7 +289,7 @@ public class ArticleServiceImpl {
             else
                 // 根据传递的页号查找所需显示数据
                 page = new Page<Article>(totalrecord, Integer.parseInt(pagenum));
-            List<Article> list = articleDao.getPageData("cid=?", new Object[]{cid}, page.getStartindex(),
+            List<Article> list = articleDao.getPageData("a.cid=?", new Object[]{cid}, page.getStartindex(),
                     page.getPagesize());
             page.setList(list);
             page.setUrl(url);

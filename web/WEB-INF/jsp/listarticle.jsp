@@ -41,8 +41,36 @@
 <input id="key" type="hidden" name="key" value="${key}">
 <%@include file="/public/header.jsp"%>
 <div class="wrapper">
-    <div class="content box">
+    <div class="content">
         <h1 class="title article-title">文章列表</h1>
+        <c:forEach items="${page.list}" var="art">
+            <div class="post format-image box">
+                <div class="details">
+                    <span class="icon-image">${fn:substring(art.time,0,16)}</span>
+            <span class="likes"><a href="#"
+                                   class="likeThis">${art.likes}</a></span>
+                    <span class="comments"><a href="#">${art.looked}</a></span>
+                </div>
+                <h1 class="title">&nbsp;<div style="color: red;">${art.top==1?'[顶置]':''}</div>&nbsp;<a href="${pageContext.request.contextPath}${art.staticURL}.html">${art.title}</a></h1>
+
+                <p>${art.meta}</p>
+
+                <div class="tags"><a href="#">${art.type}</a></div>
+                <div class="post-nav">
+            <span class="nav-prev"><a
+                    href="${pageContext.request.contextPath}/listArticle.action?cid=${art.cid}">类型：${art.cname}</a></span>
+                    <span class="nav-next"><a href="#">作者：${art.author}</a></span>
+
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </c:forEach>
+        <div class="record">
+            <%@include file="/public/page.jsp"%>
+        </div>
+    </div>
+    <%--
+    <div class="content box">
         <ul class="all-article">
             <c:forEach items="${page.list}" var="art">
                 <li class="clearfix">
@@ -55,10 +83,8 @@
                 </li>
             </c:forEach>
         </ul>
-        <div class="record">
-            <%@include file="/public/page.jsp"%>
-        </div>
     </div>
+    --%>
 
     <div class="sidebar box">
         <div class="sidebox widget">
