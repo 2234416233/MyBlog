@@ -51,7 +51,12 @@
                                    class="likeThis">${art.likes}</a></span>
                     <span class="comments"><a href="#">${art.looked}</a></span>
                 </div>
-                <h1 class="title">&nbsp;<div style="color: red;">${art.top==1?'[顶置]':''}</div>&nbsp;<a href="${pageContext.request.contextPath}${art.staticURL}.html">${art.title}</a></h1>
+                <h1 class="title">
+                    <%--<div style="color: red;">--%>
+                        <font color="red">${art.top==1?'[顶置]':''}</font>
+                    <%--</div>--%>
+                    <a href="${pageContext.request.contextPath}${art.staticURL}.html">${art.title}</a>
+                </h1>
 
                 <%--<p>${art.meta}</p>--%>
 
