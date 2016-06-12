@@ -151,6 +151,7 @@
 
 <div class="footer-wrapper">
     <div id="footer" class="four">
+        <a href="https://www.zning.net.cn">张宁网</a>&nbsp;&nbsp;
         <a href="/s/">短网址</a>&nbsp;&nbsp;
         <a href="/WorkUpload/">作业提交系统</a>&nbsp;&nbsp;
     </div>
