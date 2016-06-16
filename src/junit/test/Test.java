@@ -1,5 +1,11 @@
 package junit.test;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -24,5 +30,26 @@ public class Test {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         System.out.print(format.format(date));
+
+        try {
+            FileInputStream fis = new FileInputStream("D:\\1.txt");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IOUtils.copy(fis,baos);
+            String content = new String(baos.toByteArray(),"GBK");
+            //System.out.println(content);
+
+            if(content.contains("<html>")) {
+                Pattern p = Pattern.compile("<body>([\\s\\S]*)</body>");
+                Matcher matcher = p.matcher(content);
+                if(matcher.find()){
+                    System.out.println(matcher.group(1));
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -208,6 +208,7 @@ public class ArticleServiceImpl {
             JdbcUtils.startTransaction();
             boolean result = true;
 
+            article.setContent(ServiceUtils.removeHtml(article.getContent()));
             //保存数据库
             long artid = articleDao.saveArticle(article);
             article.setArtid((int) artid);
@@ -443,7 +444,7 @@ public class ArticleServiceImpl {
             Article article = articleDao.queryArticle(temp.getArtid());
 
             article.setType(temp.getType());
-            article.setContent(temp.getContent());
+            article.setContent(ServiceUtils.removeHtml(temp.getContent()));
             article.setCid(temp.getCid());
             article.setTitle(temp.getTitle());
             article.setTime(temp.getTime());
@@ -691,6 +692,38 @@ public class ArticleServiceImpl {
             //提交事务
             JdbcUtils.commit();
             return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JdbcUtils.rollback();
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtils.release();
+        }
+    }
+
+    public void formatdb() {
+        try {
+            // 设置事务隔离级别
+            JdbcUtils
+                    .setTransactionIsolation(JdbcUtils.TRANSACTION_READ_COMMITTED);
+            // 开启事务
+            JdbcUtils.startTransaction();
+
+            //获取文章总数
+            long nums = articleDao.queryCount("",new Object[]{});
+            //遍历所有文章
+            for(int i=0;i<nums+10;i++){
+                //获取文章信息
+                Article article = articleDao.queryArticle(100+i);
+                //更新格式化数据
+                if(article!=null) {
+                    article.setContent(ServiceUtils.removeHtml(article.getContent()));
+                    articleDao.updateArticle(article);
+                }
+            }
+
+            //提交事务
+            JdbcUtils.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             JdbcUtils.rollback();

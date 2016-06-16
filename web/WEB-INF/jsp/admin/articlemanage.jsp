@@ -25,6 +25,7 @@
 <body>
 <div class="content">
   文章管理&nbsp;<div><a href="javascript:reloadAllArticles()">重新静态化所有文章</a></div><br/>
+  <div><a href="javascript:fomatDatabase()">数据库数据格式化</a></div><br/>
   <table style="text-align: left;border: 5px;width: 100%">
     <thead>
     <tr>
@@ -80,6 +81,11 @@
     var result = window.confirm("您确认重新静态化所有博文吗？");
     if(result)
       window.location.href = "${pageContext.request.contextPath}/manage/article_reloadAll.action";
+  }
+  function fomatDatabase(){
+    var result = window.confirm("您确认格式化数据库中的各个字段为标准格式吗？");
+    if(result)
+      window.location.href = "${pageContext.request.contextPath}/manage/article_formatdb.action";
   }
 </script>
 </html>

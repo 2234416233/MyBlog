@@ -7,6 +7,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.coselding.myblog.domain.Article;
 import cn.coselding.myblog.domain.Category;
@@ -50,13 +52,13 @@ public class ServiceUtils {
     /*
     半静态化页面，将页面中的稳定数据事先静态化，正则表达式实现
      */
-    public static void staticPage(Article article, String contextPath, Category category,String realPath) {
+    public static void staticPage(Article article, String contextPath, Category category, String realPath) {
         //静态化页面
         String path = realPath + File.separator + article.getCid() + File.separator + article.getCid() + "-" + article.getArtid() + ".ftl";
         try {
             //创建，得到文件体
             File dir = new File(realPath + File.separator + article.getCid());
-            if(!dir.exists())
+            if (!dir.exists())
                 dir.mkdir();
             File file = new File(path);
             if (!file.exists())
@@ -68,36 +70,36 @@ public class ServiceUtils {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             int len = 0;
             byte[] buffer = new byte[1024];
-            while((len = fis.read(buffer))>0){
-                baos.write(buffer,0,len);
+            while ((len = fis.read(buffer)) > 0) {
+                baos.write(buffer, 0, len);
             }
             fis.close();
             baos.close();
 
             //替换模版文件中的特定字串
-            String result = new String(baos.toByteArray(),"UTF-8");
+            String result = new String(baos.toByteArray(), "UTF-8");
 
             String typeString = "";
-            if(article.getType().equals("原创")){
-                String url = ConfigUtils.getProperty("host")+contextPath+article.getStaticURL()+".html";
-                typeString = "<p>本文为博主原创，允许转载，但请声明原文地址：<a href=\""+url+"\">"+url+"</a></p>";
+            if (article.getType().equals("原创")) {
+                String url = ConfigUtils.getProperty("host") + contextPath + article.getStaticURL() + ".html";
+                typeString = "<p>本文为博主原创，允许转载，但请声明原文地址：<a href=\"" + url + "\">" + url + "</a></p>";
             }
 
             //替换内容
-            result  = result.replace("${#title#}",article.getTitle())
-                    .replace("${#artid#}",article.getArtid()+"")
+            result = result.replace("${#title#}", article.getTitle())
+                    .replace("${#artid#}", article.getArtid() + "")
                     .replace("${#category#}", category.getCname())
                     .replace("${#author#}", article.getAuthor())
                     .replace("${#time#}", formatDate(article.getTime()))
-                    .replace("${#content#}",article.getContent())
-                    .replace("${#typeString#}",typeString);
+                    .replace("${#content#}", article.getContent())
+                    .replace("${#typeString#}", typeString);
             //替换网址
             result = result.replace("${#contextPath#}", contextPath)
                     .replace("${#listArticle#}", contextPath + "/listArticle.action")
-                    .replace("${#addComment#}",contextPath+"/commentUI.action")
+                    .replace("${#addComment#}", contextPath + "/commentUI.action")
                     .replace("#${#rssBlog#}", contextPath + "/rssBlogUI.action")
-                    .replace("${#listCategoryArticle#}", contextPath+"/listArticle.action?cid="+article.getCid())
-                    .replace("${#searchUrl#}",contextPath+"/search.action");
+                    .replace("${#listCategoryArticle#}", contextPath + "/listArticle.action?cid=" + article.getCid())
+                    .replace("${#searchUrl#}", contextPath + "/search.action");
 
             //写入到目标文件中
             FileOutputStream fos = new FileOutputStream(file);
@@ -108,19 +110,19 @@ public class ServiceUtils {
         }
     }
 
-    public static String formatDate(Date date){
+    public static String formatDate(Date date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         return format.format(date);
     }
 
-    public static String getCategoryList(List<Category> categories,String contextPath){
-        StringBuffer stringBuffer  = new StringBuffer();
-        for(int i=0;i<categories.size();i++){
+    public static String getCategoryList(List<Category> categories, String contextPath) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < categories.size(); i++) {
             stringBuffer.append("<li><a href=\"")
-                        .append(contextPath+"/listArticle.action?cid="+categories.get(i).getCid())
-                        .append("\">")
-                        .append(categories.get(i).getCname())
-                        .append("</a></li>");
+                    .append(contextPath + "/listArticle.action?cid=" + categories.get(i).getCid())
+                    .append("\">")
+                    .append(categories.get(i).getCname())
+                    .append("</a></li>");
         }
         return stringBuffer.toString();
     }
@@ -173,5 +175,18 @@ public class ServiceUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String removeHtml(String content) {
+        if (content.contains("<html>")) {
+            Pattern p = Pattern.compile("<body>([\\s\\S]*)</body>");
+            Matcher matcher = p.matcher(content);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }else
+                throw new RuntimeException("文章内容格式有误！！！");
+        }
+        else
+            return content;
     }
 }
