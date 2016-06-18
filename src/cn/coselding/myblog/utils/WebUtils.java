@@ -4,6 +4,8 @@ package cn.coselding.myblog.utils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -99,6 +101,23 @@ public class WebUtils {
 	 */
 	public static String encodeFilename(String filename) {
 		return getUUID() + "_" + filename.substring(filename.lastIndexOf("."));
+	}
+
+	/**通过哈希打散文件名找到文件路径
+	 * @param filename
+	 * @param savePath
+	 * @return
+	 */
+	public static String encodePath(String filename, String savePath) {
+
+		int hashCode = filename.hashCode();
+		int dir1 = hashCode & 0xf;
+		int dir2 = (hashCode & 0xf0) >> 4;
+		String path = savePath + File.separator + dir1 + File.separator + dir2 + File.separator;
+		File file = new File(path);
+		if (!file.exists())
+			file.mkdirs();
+		return path + filename;
 	}
 
 	/**

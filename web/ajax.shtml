@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="utf-8" />
+        <title>图片上传示例 - Editor.md examples</title>
+        <script type="text/javascript" src="./jquery-2.2.1.js"></script>
+    </head>
+    <body>
+    <form id="form" action="http://localhost:8080/MyBlog/manage/uploadImage_markdowmUpload.action" method="post" enctype="multipart/form-data">
+        <input id="file" type="file" name="upload">
+        <button onclick="fun()" value="上传">上传</button>
+    </form>
+
+    <input type="text" name="url" id="url">
+    <input type="text" name="success" id="success">
+    <input type="text" name="message" id="message">
+    </body>
+    <script type="text/javascript">
+        function fun(){
+            var file = $('[name="upload"]')[0].files[0];
+            var formdata = new FormData();
+                formdata.append('upload', file);
+            formdata = new FormData($('#form')[0]);
+                alert("test");
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:8080/MyBlog/manage/uploadImage_markdowmUpload.action',
+                    data: formdata,
+                    //dataType: 'json',
+                    cache:false,
+                    contentType: false,
+                    processData: false
+                }).then(function(json) {
+                    var oldurl = $('#url').val();
+                    if (oldurl === '') {
+                        $('#url').val('七牛图片服务器的域名/' + json.url);
+                    } else {
+                        oldurl = oldurl + '$$七牛图片服务器的域名/' + json.url;
+                        $('#url').val(oldurl);
+                    }
+                    //i++
+                    //Qiniu_upload(files, length, i)
+                }, function (err) {
+                    console.log(err)
+                });
+        }
+    </script>
+</html>

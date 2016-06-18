@@ -11,6 +11,7 @@
         <constant name="struts.enable.DynamicMethodInvocation" value="false" />
         <!-- 自动重新加载资源文件 -->
         <constant name="struts.i18n.reload" value="true" />
+        <constant name="struts.multipart.saveDir" value="repository" />
 
         <package name="default" namespace="/" extends="struts-default">
                 <!-- 默认Action跳转到主页 -->
@@ -134,7 +135,8 @@
                 </action>
 
                 <!-- 后台上传图片 -->
-                <action name="uploadImage" class="cn.coselding.myblog.action.UploadImageAction">
+                <action name="uploadImage_*" class="cn.coselding.myblog.action.UploadImageAction" method="{1}">
+
                 </action>
 
         </package>
