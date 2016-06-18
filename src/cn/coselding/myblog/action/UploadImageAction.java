@@ -1,12 +1,15 @@
 package cn.coselding.myblog.action;
 
 import cn.coselding.myblog.utils.WebUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+
+import javax.servlet.ServletContext;
+import java.io.*;
 import java.rmi.server.ServerCloneException;
 
 /**Ajax图片上传
@@ -63,10 +66,12 @@ public class UploadImageAction extends ActionSupport {
             }
 
             //合成服务器路径
-            String path = ServletActionContext.getServletContext().getRealPath("/upload/images/");
+            String path = ServletActionContext.getServletContext().getRealPath("/upload/images");
             String filename = WebUtils.encodeFilename(uploadFileName);
+            //hash打散文件
+            String savePath = WebUtils.encodePath(filename,path);
             //文件持久化
-            File file = new File(path+File.separator+filename);
+            File file = new File(path+File.separator+savePath);
             FileOutputStream fos = new FileOutputStream(file);
             FileInputStream fis = new FileInputStream(upload);
             int len = 0;
@@ -79,7 +84,7 @@ public class UploadImageAction extends ActionSupport {
 
             //反馈客户端
             out.println("<script type=\"text/javascript\">");
-            out.println("window.parent.CKEDITOR.tools.callFunction("+ callback + ",'" + ServletActionContext.getRequest().getContextPath()+"/upload/images/"+ filename + "','')");
+            out.println("window.parent.CKEDITOR.tools.callFunction("+ callback + ",'" + ServletActionContext.getRequest().getContextPath()+"/upload/images/"+savePath + "','')");
             out.println("</script>");
             out.close();
         } else {//不符合要求，进行提示
@@ -89,6 +94,34 @@ public class UploadImageAction extends ActionSupport {
             out.close();
         }
         //不反馈页面，这是后台AJax请求，返回脚本让浏览器执行即可
+        return null;
+    }
+
+    public String markdowmUpload(){
+        String savePath= ServletActionContext.getServletContext().getRealPath("/upload/images");
+        try {
+            FileInputStream fis = new FileInputStream(upload);
+            FileOutputStream fos = new FileOutputStream(savePath+"/test.jpg");
+            IOUtils.copy(fis,fos);
+            fis.close();
+            fos.close();
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("success",1);
+            jsonObject.addProperty("message","文件上传成功");
+            jsonObject.addProperty("url","http://localhost:8080/MyBlog/upload/images/test.jpg");
+            String result = jsonObject.toString();
+            System.out.println(result);
+            PrintWriter out = ServletActionContext.getResponse().getWriter();
+            out.write(result);
+            //out.write("<html><head><title></title></head><body>"+result+"</body></html>");
+            out.close();
+            return null;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }
