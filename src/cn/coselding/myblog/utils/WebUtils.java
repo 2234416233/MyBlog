@@ -113,11 +113,11 @@ public class WebUtils {
 		int hashCode = filename.hashCode();
 		int dir1 = hashCode & 0xf;
 		int dir2 = (hashCode & 0xf0) >> 4;
-		String path = savePath + File.separator + dir1 + File.separator + dir2 + File.separator;
+		String path = savePath + "/" + dir1 + "/" + dir2;
 		File file = new File(path);
 		if (!file.exists())
 			file.mkdirs();
-		return path + filename;
+		return dir1 + "/" + dir2 + "/" + filename;
 	}
 
 	/**

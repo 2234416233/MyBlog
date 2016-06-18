@@ -66,12 +66,12 @@ public class UploadImageAction extends ActionSupport {
             }
 
             //合成服务器路径
-            String path = ServletActionContext.getServletContext().getRealPath("/upload/images/");
+            String path = ServletActionContext.getServletContext().getRealPath("/upload/images");
             String filename = WebUtils.encodeFilename(uploadFileName);
             //hash打散文件
             String savePath = WebUtils.encodePath(filename,path);
             //文件持久化
-            File file = new File(savePath);
+            File file = new File(path+File.separator+savePath);
             FileOutputStream fos = new FileOutputStream(file);
             FileInputStream fis = new FileInputStream(upload);
             int len = 0;
@@ -82,10 +82,9 @@ public class UploadImageAction extends ActionSupport {
             fis.close();
             fos.close();
 
-            String contextPath = savePath.substring(savePath.indexOf("/upload/images/"));
             //反馈客户端
             out.println("<script type=\"text/javascript\">");
-            out.println("window.parent.CKEDITOR.tools.callFunction("+ callback + ",'" + ServletActionContext.getRequest().getContextPath()+contextPath + "','')");
+            out.println("window.parent.CKEDITOR.tools.callFunction("+ callback + ",'" + ServletActionContext.getRequest().getContextPath()+"/upload/images/"+savePath + "','')");
             out.println("</script>");
             out.close();
         } else {//不符合要求，进行提示
