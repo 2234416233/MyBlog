@@ -13,7 +13,7 @@
   <title>首页</title>
   <style type="text/css">
     body{
-      background: #86a2bf;
+      background: #F1F1F1;
     }
   </style>
 </head>

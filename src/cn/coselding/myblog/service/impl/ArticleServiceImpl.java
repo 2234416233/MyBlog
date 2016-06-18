@@ -577,7 +577,7 @@ public class ArticleServiceImpl {
     }
 
     //得到freemarker模版文件所需参数,没有事务管理
-    public Map<String, Object> getTemplateParams1(int artid, String contextPath) {
+    private Map<String, Object> getTemplateParams1(int artid, String contextPath) {
         try {
             //要看的文章
             List<Article> articles = articleDao.queryArticleBySQL("select * from article where artid=?", new Object[]{artid});
@@ -787,8 +787,10 @@ public class ArticleServiceImpl {
             JdbcUtils.startTransaction();
 
             Article article = articleDao.queryArticleInfo(artid);
-            article.setLooked(article.getLooked()+1);
-            articleDao.updateArticleInfo(article);
+            if(article!=null) {
+                article.setLooked(article.getLooked() + 1);
+                articleDao.updateArticleInfo(article);
+            }
 
             //提交事务
             JdbcUtils.commit();

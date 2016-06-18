@@ -36,10 +36,9 @@ public class ArticleViewFilter implements Filter {
         Pattern pattern = Pattern.compile("-([0-9]+)\\.");
         Matcher matcher = pattern.matcher(path);
 
-        //不匹配，路径不正确
+        //不匹配，路径不符合博客文章页面路径，直接跳过
         if(!matcher.find()){
-            //路径不对，报错404
-            response.sendError(404,"您输入路径的不存在！");
+            filterChain.doFilter(request,response);
             return;
         }
 

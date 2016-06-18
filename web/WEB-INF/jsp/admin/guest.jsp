@@ -11,14 +11,14 @@
     <title>${pageTitle}</title>
     <style type="text/css">
         body{
-            background: #86a2bf;
+            background: #F1F1F1;
         }
         .content{
             font-size: 30px;
             margin-top: 200px;
             text-align: center;
             color: #aa1111;
-            background: #86a2bf;
+            background: #F1F1F1;
         }
     </style>
 </head>

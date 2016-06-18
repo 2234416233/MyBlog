@@ -88,6 +88,23 @@
         <filter-name>struts2</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/public/404.html</location>
+    </error-page>
+    <error-page>
+        <error-code>506</error-code>
+        <location>/public/500.html</location>
+    </error-page>
+    <error-page>
+        <error-code>501</error-code>
+        <location>/public/500.html</location>
+    </error-page>
+    <error-page>
+        <error-code>505</error-code>
+        <location>/public/500.html</location>
+    </error-page>
 	
     <welcome-file-list>
         <welcome-file>index.action</welcome-file>

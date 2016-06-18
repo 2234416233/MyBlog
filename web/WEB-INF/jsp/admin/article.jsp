@@ -14,14 +14,14 @@
   <script type="text/javascript" src="../js/ckeditor.js"></script>
   <style type="text/css">
     body{
-      background: #86a2bf;
+      background: #F1F1F1;
     }
     .content{
       font-size: 20px;
       margin-top: 20px;
       text-align: center;
       color: #aa1111;
-      background: #86a2bf;
+      background: #F1F1F1;
     }
   </style>
 </head>
