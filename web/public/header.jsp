@@ -38,9 +38,6 @@
             <ul>
               <li><a href="/s/">短网址</a></li>
               <li><a href="/WorkUpload/">作业提交系统</a></li>
-              <li><a href="/uShare/">uShare</a></li>
-              <li><a href="/smartor/">Smartor</a></li>
-              <li><a href="/PlaneWar/">飞机大战</a></li>
             </ul>
           </li>
         </ul>
