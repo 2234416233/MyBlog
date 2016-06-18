@@ -7,6 +7,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.coselding.myblog.domain.Article;
 import cn.coselding.myblog.domain.Category;
@@ -193,5 +195,18 @@ public class ServiceUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String removeHtml(String content) {
+        if (content.contains("<html>")) {
+            Pattern p = Pattern.compile("<body>([\\s\\S]*)</body>");
+            Matcher matcher = p.matcher(content);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }else
+                throw new RuntimeException("文章内容格式有误！！！");
+        }
+        else
+            return content;
     }
 }

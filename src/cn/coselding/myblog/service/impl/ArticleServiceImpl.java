@@ -799,4 +799,36 @@ public class ArticleServiceImpl {
             JdbcUtils.release();
         }
     }
+
+    public void formatdb() {
+        try {
+            // 设置事务隔离级别
+            JdbcUtils
+                    .setTransactionIsolation(JdbcUtils.TRANSACTION_READ_COMMITTED);
+            // 开启事务
+            JdbcUtils.startTransaction();
+
+            //获取文章总数
+            long nums = articleDao.queryCount("",new Object[]{});
+            //遍历所有文章
+            for(int i=0;i<nums+10;i++){
+                //获取文章信息
+                Article article = articleDao.queryArticle(100+i);
+                //更新格式化数据
+                if(article!=null) {
+                    article.setContent(ServiceUtils.removeHtml(article.getContent()));
+                    articleDao.updateArticle(article);
+                }
+            }
+
+            //提交事务
+            JdbcUtils.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JdbcUtils.rollback();
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtils.release();
+        }
+    }
 }

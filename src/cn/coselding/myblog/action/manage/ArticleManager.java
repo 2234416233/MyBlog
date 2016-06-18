@@ -365,6 +365,17 @@ public class ArticleManager extends ActionSupport {
         return "message";
     }
 
+    public String formatdb() {
+        HttpServletRequest request = ServletActionContext.getRequest();
+
+        ArticleServiceImpl service = new ArticleServiceImpl();
+        service.formatdb();
+
+        request.setAttribute("message", "数据库格式化成功！！！");
+        request.setAttribute("url", request.getContextPath() + "/manage/article.action");
+        return "message";
+    }
+
     //默认情况下，查询文章列表
     @Override
     public String execute() throws Exception {
