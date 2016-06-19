@@ -21,3 +21,5 @@
 ![image](https://github.com/Coselding/MyBlog/blob/master/screenshot/4.png)
 
 ![image](https://github.com/Coselding/MyBlog/blob/master/screenshot/5.png)
+
+本项目到此为止，该项目的完全静态化分支分离创建了一个全新的项目，请前往新项目~[https://github.com/Coselding/Hamster](https://github.com/Coselding/Hamster)
