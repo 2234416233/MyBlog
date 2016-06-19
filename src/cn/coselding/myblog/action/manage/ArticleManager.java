@@ -191,9 +191,9 @@ public class ArticleManager extends ActionSupport {
         article.setType(type);
         article.setCid(cid);
         try {
-            if(time==null||time.length()<=0){
+            if (time == null || time.length() <= 0) {
                 article.setTime(new Date());
-            }else{
+            } else {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
                 time = time.replace("T", " ");
                 article.setTime(format.parse(time));
@@ -225,6 +225,14 @@ public class ArticleManager extends ActionSupport {
         //静态化页面
         Map<String, Object> params = service.getTemplateParams(article.getArtid(), ServletActionContext.getRequest().getContextPath());
         ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
+
+        //重新静态化上一篇文章，因为他的页面的下一篇超链接需要更新
+        Article last = (Article) params.get("lastArticle");
+        params = service.getTemplateParams(last.getArtid(), ServletActionContext.getRequest().getContextPath());
+        ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
+
+        //重新静态化主页
+        index();
 
         request.setAttribute("message", "博文录入成功！！！");
         request.setAttribute("url", request.getContextPath() + "/manage/article.action");
@@ -275,10 +283,8 @@ public class ArticleManager extends ActionSupport {
         Map<String, Object> params = service.getTemplateParams((int) artid, ServletActionContext.getRequest().getContextPath());
         ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
 
-        //重新静态化上一篇文章，因为他的页面的下一篇超链接需要更新
-        Article last = (Article) params.get("lastArticle");
-        params = service.getTemplateParams(last.getArtid(), ServletActionContext.getRequest().getContextPath());
-        ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
+        //重新静态化主页
+        index();
 
         request.setAttribute("message", "博文修改成功！！！");
         request.setAttribute("url", request.getContextPath() + "/manage/article.action");
@@ -429,7 +435,7 @@ public class ArticleManager extends ActionSupport {
         return "message";
     }
 
-    public String index() throws Exception {
+    public String index() {
         HttpServletRequest request = ServletActionContext.getRequest();
 
         String realPath = request.getRealPath("/");
@@ -438,9 +444,21 @@ public class ArticleManager extends ActionSupport {
                 .getArticleListParams(request.getContextPath());
         params.put("contextPath", request.getContextPath());
         //静态化到html文件中
-        FileOutputStream fos = new FileOutputStream(realPath + "/index.html");
-        TemplateUtils.parserTemplate(realPath + "/blog/template", "/index.ftl", params, fos);
-        fos.close();
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(realPath + "/index.html");
+            TemplateUtils.parserTemplate(realPath + "/blog/template", "/index.ftl", params, fos);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
 
         request.setAttribute("message", "主页静态化成功！！！");
         request.setAttribute("url", request.getContextPath() + "/manage/article.action");

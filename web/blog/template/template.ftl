@@ -72,7 +72,7 @@
 
 <div class="wrapper">
     <ul class="social">
-        <li><a class="rss" href="#${contextPath}/rssBlogUI.action" title="博客订阅"></a></li>
+        <li><a class="rss" href="${contextPath}/rssBlogUI.action" title="博客订阅"></a></li>
         <li><a class="qq" href="tencent://message/?uin=1098129797&Site=&Menu=yes" title="QQ"></a></li>
         <li><a class="weibo" href="http://weibo.com/u/2671168890" title="新浪微博"></a></li>
         <li><a class="wechat" href="${contextPath}/public/wechat.jsp" title="微信"></a></li>
