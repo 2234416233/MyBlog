@@ -445,6 +445,9 @@ public class ArticleServiceImpl {
             article.setTime(temp.getTime());
             article.setMeta(temp.getMeta());
             article.setTop(temp.getTop());
+            if(temp.getMd()!=null){
+                article.setMd(temp.getMd());
+            }
             //保存数据库
             articleDao.updateArticle(article);
 

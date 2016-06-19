@@ -21,8 +21,8 @@ public class ArticleDaoImpl implements ArticleDao {
     @Override
     public long saveArticle(Article article) throws SQLException {
         QueryRunner runner = new QueryRunner();
-        String sql = "insert into article(cid,time,author,likes,looked,title,meta,content,staticURL,uid,type,top) values(?,?,?,?,?,?,?,?,?,?,?,?);";
-        Object[] params = {article.getCid(), article.getTime(), article.getAuthor(), article.getLikes(), article.getLooked(), article.getTitle(), article.getMeta(), article.getContent(), article.getStaticURL(), article.getUid(),article.getType(),article.getTop()};
+        String sql = "insert into article(cid,time,author,likes,looked,title,meta,content,staticURL,uid,type,top,md) values(?,?,?,?,?,?,?,?,?,?,?,?,?);";
+        Object[] params = {article.getCid(), article.getTime(), article.getAuthor(), article.getLikes(), article.getLooked(), article.getTitle(), article.getMeta(), article.getContent(), article.getStaticURL(), article.getUid(),article.getType(),article.getTop(),article.getMd()};
         long result  = runner.insert(JdbcUtils.getConnection(),sql,new ScalarHandler<Long>(),params);
         return result;
     }
@@ -39,8 +39,8 @@ public class ArticleDaoImpl implements ArticleDao {
     @Override
     public int updateArticle(Article article) throws SQLException {
         QueryRunner runner = new QueryRunner();
-        String sql = "update article set cid=?,time=?,likes=?,looked=?,title=?,meta=?,content=?,staticURL=?,type=?,top=? where artid=?;";
-        Object[] params = {article.getCid(), article.getTime(), article.getLikes(), article.getLooked(), article.getTitle(), article.getMeta(), article.getContent(), article.getStaticURL(), article.getType(),article.getTop(),article.getArtid()};
+        String sql = "update article set cid=?,time=?,likes=?,looked=?,title=?,meta=?,content=?,staticURL=?,type=?,top=?,md=? where artid=?;";
+        Object[] params = {article.getCid(), article.getTime(), article.getLikes(), article.getLooked(), article.getTitle(), article.getMeta(), article.getContent(), article.getStaticURL(), article.getType(),article.getTop(),article.getMd(),article.getArtid()};
         int result = runner.update(JdbcUtils.getConnection(), sql, params);
         return result;
     }

@@ -1,5 +1,9 @@
 package junit.test;
 
+import org.tautua.markdownpapers.Markdown;
+import org.tautua.markdownpapers.parser.ParseException;
+
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -10,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public class Test {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException, ParseException {
         /*
         Pattern pattern = Pattern.compile("/blog/([0-9]+)/([0-9]+)-([0-9]+)");
         Matcher matcher = pattern.matcher("http://coselding.cn/MyBlog/blog/1/3-124.html");
@@ -24,5 +28,13 @@ public class Test {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         System.out.print(format.format(date));
+
+        Markdown markdown = new Markdown();
+        InputStreamReader reader = new InputStreamReader(new FileInputStream("D:\\in.txt"));
+        Writer writer = new OutputStreamWriter(new FileOutputStream("D:\\out.html"));
+        markdown.transform(reader,writer);
+        reader.close();
+        writer.close();
+        System.out.println("success");
     }
 }

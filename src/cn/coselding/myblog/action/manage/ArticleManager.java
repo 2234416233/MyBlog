@@ -11,12 +11,12 @@ import cn.coselding.myblog.utils.ServiceUtils;
 import cn.coselding.myblog.utils.TemplateUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.ServletActionContext;
+import org.tautua.markdownpapers.Markdown;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,7 +39,16 @@ public class ArticleManager extends ActionSupport {
     private Date date;
     private String pagenum;
     private int top;
-    private String meta ;
+    private String meta;
+    private String md;
+
+    public String getMd() {
+        return md;
+    }
+
+    public void setMd(String md) {
+        this.md = md;
+    }
 
     public String getMeta() {
         return meta;
@@ -176,6 +185,25 @@ public class ArticleManager extends ActionSupport {
         HttpServletRequest request = ServletActionContext.getRequest();
         request.setAttribute("method", "add");
         request.setAttribute("pageTitle", "添加文章");
+        request.setAttribute("md", md);
+        Article article = new Article();
+        article.setTitle(title);
+        article.setType(type);
+        article.setCid(cid);
+        try {
+            if(time==null||time.length()<=0){
+                article.setTime(new Date());
+            }else{
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                time = time.replace("T", " ");
+                article.setTime(format.parse(time));
+            }
+        } catch (Exception e) {
+            article.setTime(new Date());
+        }
+        article.setTop(top);
+        article.setMeta(meta);
+        request.setAttribute("article", article);
         return SUCCESS;
     }
 
@@ -192,10 +220,10 @@ public class ArticleManager extends ActionSupport {
 
         //保存博文
         ArticleServiceImpl service = new ArticleServiceImpl();
-        article = service.addArticle(article,ServletActionContext.getRequest().getContextPath(), ServletActionContext.getServletContext().getRealPath("/blog"));
+        article = service.addArticle(article, ServletActionContext.getRequest().getContextPath(), ServletActionContext.getServletContext().getRealPath("/blog"));
 
         //静态化页面
-        Map<String,Object> params = service.getTemplateParams(article.getArtid(), ServletActionContext.getRequest().getContextPath());
+        Map<String, Object> params = service.getTemplateParams(article.getArtid(), ServletActionContext.getRequest().getContextPath());
         ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
 
         request.setAttribute("message", "博文录入成功！！！");
@@ -228,6 +256,8 @@ public class ArticleManager extends ActionSupport {
 
         request.setAttribute("method", "update");
         request.setAttribute("pageTitle", "修改文章");
+
+        request.setAttribute("md", md);
         return SUCCESS;
     }
 
@@ -242,7 +272,7 @@ public class ArticleManager extends ActionSupport {
         service.updateArticle(article, ServletActionContext.getRequest().getContextPath(), ServletActionContext.getServletContext().getRealPath("/blog"));
 
         //静态化页面
-        Map<String,Object> params = service.getTemplateParams((int) artid, ServletActionContext.getRequest().getContextPath());
+        Map<String, Object> params = service.getTemplateParams((int) artid, ServletActionContext.getRequest().getContextPath());
         ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
 
         //重新静态化上一篇文章，因为他的页面的下一篇超链接需要更新
@@ -265,8 +295,31 @@ public class ArticleManager extends ActionSupport {
         article.setTop(top);
 
         //截取正文部分
-        content = content.substring(content.indexOf("<body>") + 6);
-        content = content.substring(0, content.indexOf("</body>"));
+        if (content.contains("<body>")) {
+            content = content.substring(content.indexOf("<body>") + 6);
+            content = content.substring(0, content.indexOf("</body>"));
+        }
+        if (md != null && md.length() > 0) {
+            article.setMd(content);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Reader reader = new InputStreamReader(new ByteArrayInputStream(content.getBytes()));
+            Writer writer = new OutputStreamWriter(baos);
+            Markdown markdown = new Markdown();
+            try {
+                markdown.transform(reader, writer);
+            } catch (org.tautua.markdownpapers.parser.ParseException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    reader.close();
+                    writer.close();
+                    baos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            content = new String(baos.toByteArray());
+        }
         article.setContent(content);
         //提取文章摘要
         if (content.length() > 250) {
@@ -289,8 +342,31 @@ public class ArticleManager extends ActionSupport {
         article.setTop(top);
 
         //截取正文部分
-        content = content.substring(content.indexOf("<body>") + 6);
-        content = content.substring(0, content.indexOf("</body>"));
+        if (content.contains("<body>")) {
+            content = content.substring(content.indexOf("<body>") + 6);
+            content = content.substring(0, content.indexOf("</body>"));
+        }
+        if (md != null && md.length() > 0) {
+            article.setMd(content);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Reader reader = new InputStreamReader(new ByteArrayInputStream(content.getBytes()));
+            Writer writer = new OutputStreamWriter(baos);
+            Markdown markdown = new Markdown();
+            try {
+                markdown.transform(reader, writer);
+            } catch (org.tautua.markdownpapers.parser.ParseException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    reader.close();
+                    writer.close();
+                    baos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            content = new String(baos.toByteArray());
+        }
         article.setContent(content);
         //提取文章摘要
         article.setMeta(meta);
@@ -353,17 +429,17 @@ public class ArticleManager extends ActionSupport {
         return "message";
     }
 
-    public String index()throws Exception{
+    public String index() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
 
         String realPath = request.getRealPath("/");
         //查询首页所需动态信息
-        Map<String,Object> params = new ArticleServiceImpl()
+        Map<String, Object> params = new ArticleServiceImpl()
                 .getArticleListParams(request.getContextPath());
-        params.put("contextPath",request.getContextPath());
+        params.put("contextPath", request.getContextPath());
         //静态化到html文件中
-        FileOutputStream fos = new FileOutputStream(realPath+"/index.html");
-        TemplateUtils.parserTemplate(realPath + "/blog/template", "/index.ftl",params,fos);
+        FileOutputStream fos = new FileOutputStream(realPath + "/index.html");
+        TemplateUtils.parserTemplate(realPath + "/blog/template", "/index.ftl", params, fos);
         fos.close();
 
         request.setAttribute("message", "主页静态化成功！！！");

@@ -11,6 +11,8 @@
 <html>
 <head>
   <title>${pageTitle}</title>
+  <link rel="stylesheet" href="../md/css/style.css" />
+  <link rel="stylesheet" href="../md/css/editormd.css" />
   <script type="text/javascript" src="../js/ckeditor.js"></script>
   <style type="text/css">
     body{
@@ -29,8 +31,9 @@
 <div class="content">
   ${pageTitle}<br/>
 
-  <form action="${pageContext.request.contextPath}/manage/article_${method}.action" method="post">
+  <form id="form" action="${pageContext.request.contextPath}/manage/article_${method}.action" method="post">
     <input type="hidden" name="artid" value="${artid}">
+    <input id="md" type="hidden" name="md" value="${md}">
     <table style="text-align: left;border: 1px;margin: auto">
       <tr>
         <td>文章标题：</td>
@@ -78,24 +81,46 @@
       <c:if test="${method=='update'}">
         <tr>
           <td>摘要：</td>
-          <td><textarea name="meta" cols="80" rows="8">${fn:escapeXml(article.meta)}</textarea></td>
+          <td>
+              <textarea name="meta" cols="80" rows="8">${fn:escapeXml(article.meta)}</textarea>
+          </td>
           <td>${errors.meta[0]}</td>
         </tr>
       </c:if>
       <tr>
         <td></td>
         <td>文章内容:</td>
-        <td></td>
+        <td>
+          <c:if test="${empty(md)}">
+            <c:if test="${method=='add'}"><a href="javascript:editorChangeAdd('md')">MarkDown编辑器</a></c:if>
+            <c:if test="${method=='update'}"><a href="javascript:editorChangeUpdate('md')">MarkDown编辑器</a></c:if>
+          </c:if>
+          <c:if test="${!empty(md)}">
+            <c:if test="${method=='add'}"><a href="javascript:editorChangeAdd('')">CKEditor编辑器</a></c:if>
+            <c:if test="${method=='update'}"><a href="javascript:editorChangeUpdate('')">CKEditor编辑器</a></c:if>
+          </c:if>
+        </td>
       </tr>
     </table>
     ${errors.content[0]}<br/>
-    <textarea name="content" id="content">${fn:escapeXml(article.content)}</textarea>
+    <c:if test="${empty(md)}">
+      <textarea name="content" id="content">${fn:escapeXml(article.content)}</textarea>
+    </c:if>
+    <c:if test="${!empty(md)}">
+      <div id="test-editormd">
+        <textarea style="display:none;" name="content"><c:if test="${!empty(article.md)}">${fn:escapeXml(article.md)}</c:if><c:if test="${empty(article.md)}">${fn:escapeXml(article.content)}</c:if></textarea>
+      </div>
+    </c:if>
     <input type="submit" value="提交" width="150" height="75">
   </form>
 </div>
 </body>
+<script src="../style/js/jquery-1.7.2.min.js"></script>
+<script src="../md/editormd.js"></script>
 <script type="text/javascript">
-  CKEDITOR.replace('content');
+  <c:if test="${empty(md)}">
+    CKEDITOR.replace('content');
+  </c:if>
   function addCategory(url){
     var categoryName = window.prompt("添加文章类别");
     if(categoryName==null||categoryName.trim().length<=0) {
@@ -125,5 +150,51 @@
     document.body.appendChild(form);
     form.submit();
   }
+
+  function editorChangeAdd(md){
+    var r = window.confirm("切换编辑器会把编辑器中的内容清空哦，请确保做好内容备份工作！");
+    if(r){
+      var form = document.getElementById("form");
+      form.action="${pageContext.request.contextPath}/manage/article_addui.action";
+      document.getElementById("md").value = md;
+      form.submit();
+    }
+  }
+
+  function editorChangeUpdate(md){
+    var r = window.confirm("切换编辑器会使在当前页面下做的修改丢失哦，请确保做好内容备份工作！");
+    if(r){
+      var form = document.getElementById("form");
+      form.action="${pageContext.request.contextPath}/manage/article_updateui.action";
+      document.getElementById("md").value = md;
+      form.submit();
+    }
+  }
+
+  $(function() {
+    var testEditor = editormd("test-editormd", {
+      width: "90%",
+      height: 640,
+      markdown : "",
+      path : '../md/lib/',
+      //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为 true
+      //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为 true
+      //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为 true
+      //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为 0.1
+      //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为 #fff
+      imageUpload : true,
+      imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+      imageUploadURL : "http://localhost:8080/MyBlog/manage/uploadImage_markdowmUpload.action",
+
+      /*
+       上传的后台只需要返回一个 JSON 数据，结构如下：
+       {
+       success : 0 | 1,           // 0 表示上传失败，1 表示上传成功
+       message : "提示的信息，上传成功或上传失败及错误信息等。",
+       url     : "图片地址"        // 上传成功时才返回
+       }
+       */
+    });
+  });
 </script>
 </html>

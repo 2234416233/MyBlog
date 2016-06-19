@@ -39,6 +39,7 @@ CREATE TABLE article
   cid int,
   type VARCHAR (10) NOT  NULL ,
   top int DEFAULT 0,
+  md LONGTEXT,
   INDEX index_article_artid (artid),
   INDEX index_article_uid (uid),
   INDEX index_article_cid (cid)

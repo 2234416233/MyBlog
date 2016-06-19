@@ -22,6 +22,15 @@ public class Article {
     private String showtime;
     private int top = 0;
     private String cname;
+    private String md;
+
+    public String getMd() {
+        return md;
+    }
+
+    public void setMd(String md) {
+        this.md = md;
+    }
 
     public String staticPath(){
         return getCid() + "/" + getCid() + "-" + artid;
@@ -78,6 +87,8 @@ public class Article {
                 ", type='" + type + '\'' +
                 ", showtime='" + showtime + '\'' +
                 ", top=" + top +
+                ", cname='" + cname + '\'' +
+                ", md='" + md + '\'' +
                 '}';
     }
 
