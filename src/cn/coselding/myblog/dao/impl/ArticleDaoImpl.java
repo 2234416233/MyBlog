@@ -61,13 +61,13 @@ public class ArticleDaoImpl implements ArticleDao {
         QueryRunner runner = new QueryRunner();
         //默认parmas为空的情况
         List<Object> list= new ArrayList<Object>();
-        String sql = "select artid,time,author,title,staticURL,cid,top from article order by top desc,time desc limit ?,?;";
+        String sql = "select artid,time,author,title,staticURL,a.cid,top,looked,likes,c.cname from article a,category c where a.cid=c.cid order by top desc,time desc limit ?,?;";
         //params不为空，修改参数
         if(params!=null&&params.length>0){
             selection = " where "+selection;
             for(int i=0;i<params.length;i++)
                 list.add(params[i]);
-            sql= "select artid,time,author,title,staticURL,cid,top from article "+selection+" order by top desc,time desc limit ?,?;";
+            sql= "select artid,time,author,title,staticURL,a.cid,top,looked,likes,c.cname from article a,category c "+selection+" and a.cid=c.cid order by top desc,time desc limit ?,?;";
         }
         //分页参数不管params是否为空一定要添加
         list.add(startindex);

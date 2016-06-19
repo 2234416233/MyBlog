@@ -67,21 +67,7 @@ public class LikeAction extends ActionSupport{
      * @return
      * @throws Exception
      */
-    public String getData() throws Exception {
-        VisitorServiceImpl service = new VisitorServiceImpl();
-        Article article = service.getData(artid);
-        //回写响应数据
-        PrintWriter out = ServletActionContext.getResponse().getWriter();
-        out.write(article.getLooked()+";"+article.getLikes());
-        out.close();
-        return null;
-    }
-
-    /**获取首页文章列表的喜爱数和浏览数
-     * @return
-     * @throws Exception
-     */
-    public String getListData() throws Exception {
+    public String ajax() throws Exception {
         VisitorServiceImpl service = new VisitorServiceImpl();
         Article article = service.getData(artid);
         //回写响应数据

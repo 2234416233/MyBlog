@@ -1,5 +1,6 @@
 package cn.coselding.myblog.action.manage;
 
+import cn.coselding.myblog.dao.ArticleDao;
 import cn.coselding.myblog.domain.Article;
 import cn.coselding.myblog.domain.Category;
 import cn.coselding.myblog.domain.Page;
@@ -244,6 +245,11 @@ public class ArticleManager extends ActionSupport {
         Map<String,Object> params = service.getTemplateParams((int) artid, ServletActionContext.getRequest().getContextPath());
         ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
 
+        //重新静态化上一篇文章，因为他的页面的下一篇超链接需要更新
+        Article last = (Article) params.get("lastArticle");
+        params = service.getTemplateParams(last.getArtid(), ServletActionContext.getRequest().getContextPath());
+        ServiceUtils.staticPage(ServletActionContext.getServletContext().getRealPath("/blog"), params);
+
         request.setAttribute("message", "博文修改成功！！！");
         request.setAttribute("url", request.getContextPath() + "/manage/article.action");
         return "message";
@@ -357,7 +363,7 @@ public class ArticleManager extends ActionSupport {
         params.put("contextPath",request.getContextPath());
         //静态化到html文件中
         FileOutputStream fos = new FileOutputStream(realPath+"/index.html");
-        TemplateUtils.parserTemplate(realPath + "/WEB-INF/ftl", "/index.ftl",params,fos);
+        TemplateUtils.parserTemplate(realPath + "/blog/template", "/index.ftl",params,fos);
         fos.close();
 
         request.setAttribute("message", "主页静态化成功！！！");

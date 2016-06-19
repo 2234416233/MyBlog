@@ -4,6 +4,7 @@ import cn.coselding.myblog.domain.Article;
 import cn.coselding.myblog.domain.Category;
 import cn.coselding.myblog.domain.Page;
 import cn.coselding.myblog.service.impl.ArticleServiceImpl;
+import cn.coselding.myblog.utils.Global;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.ServletActionContext;
 import sun.util.resources.cldr.te.CalendarData_te_IN;
@@ -44,6 +45,7 @@ public class SearchAction extends ActionSupport{
         //返回地址，分页查询使用
         String url = ServletActionContext.getRequest().getContextPath()+"/search.action";
         Page<Article> page = service.searchArticle(key,pagenum,url);
+        request.setAttribute("categories", Global.getArticleService().getAllCategories());
         request.setAttribute("page", page);
         //js将所有连接重置的参数
         request.setAttribute("key", key);

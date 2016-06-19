@@ -92,14 +92,14 @@
         </form>
       </div>
 
-      <div class="sidebox widget">
-        <h3 class="widget-title categories">分类</h3>
-        <ul class="categories">
-          <c:forEach items="${params.categories}" var="cate">
-            <li><a href="${pageContext.request.contextPath}/listArticle.action?cid=${cate.cid}">${cate.cname}</a></li>
-          </c:forEach>
-        </ul>
-      </div>
+      <%--<div class="sidebox widget">--%>
+        <%--<h3 class="widget-title categories">分类</h3>--%>
+        <%--<ul class="categories">--%>
+          <%--<c:forEach items="${params.categories}" var="cate">--%>
+            <%--<li><a href="${pageContext.request.contextPath}/listArticle.action?cid=${cate.cid}">${cate.cname}</a></li>--%>
+          <%--</c:forEach>--%>
+        <%--</ul>--%>
+      <%--</div>--%>
     </div>
   </div>
 

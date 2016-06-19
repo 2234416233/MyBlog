@@ -361,6 +361,7 @@ hr {
     font-weight: 300;
     font-style: italic;
 }
+
 #navigation {
     background: rgba(0, 0, 0, 0.44);
     -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.44);
@@ -1009,9 +1010,10 @@ iframe {
 .blog-grid .post.not-found {
     width: 100% !important
 }
+
 .error404 .searchform,
 .blog-grid .post.not-found .searchform {
-    max-width: 200px
+    max-width: 400px;
 }
 /* =Single
 ----------------------------------------------- */
@@ -1360,10 +1362,12 @@ li.post.pingback p {
     clear: both;
     visibility: hidden;
 }
+
 .searchform input {
     padding: 8px 10px;
     margin-bottom: 20px;
 }
+
 .form-allowed-tags {
     display: none
 }

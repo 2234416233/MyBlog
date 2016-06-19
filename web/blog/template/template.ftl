@@ -43,6 +43,9 @@
                         <a href="${contextPath}">博客</a>
                         <ul>
                             <li><a href="${contextPath}/listArticle.action">所有博文</a></li>
+                            <#list categoryList as cl>
+                                <li><a href="${contextPath}/listArticle.action?cid=${cl.cid}">${cl.cname}</a></li>
+                            </#list>
                         </ul>
                     </li>
                     <li>
@@ -76,9 +79,17 @@
         <li><a class="email" href="mailto:1098129797@qq.com" title="邮件"></a></li>
         <li><a class="phone" href="tel:13210135013" title="手机"></a></li>
     </ul>
-    <div class="intro">非淡泊无以明志，非宁静无以致远。</div>
 
-    <div class="content box">
+    <div class="intro">
+        非淡泊无以明志，非宁静无以致远。
+        <div style="float: right;">
+            <form class="searchform" method="post" action="${contextPath}/search.action">
+                <input style="width: 200px;" type="text" name="key" value="输入关键字搜索博客..." onFocus="this.value=''" onBlur="this.value='输入关键字搜索博客...'"/>
+            </form>
+        </div>
+    </div>
+
+    <div class="content box" style="width: 96%;">
         <h1 class="title article-title">${article.title}</h1>
         <div class="info">
             <div><a href="${contextPath}/listArticle.action?cid=${article.cid}" title="查看该类型博文"><i class="icon-folder-open-alt"></i>：${category.cname}</a></div>
@@ -112,38 +123,38 @@
         </div>
     </div>
 
-    <div class="sidebar box">
-        <div class="sidebox widget">
-            <h3 class="widget-title">最近更新</h3>
-            <ul class="post-list">
-                <#list lastArticlesList as la>
-                    <li>
-                        <div class="meta">
-                            <h5><a href="${contextPath}${la.staticURL}.html">${la.title}</a></h5>
-                            <em>${la.time?string("yyyy-MM-dd HH:mm")}</em>
-                        </div>
-                    </li>
-                </#list>
-                <li class="more"><a href="${contextPath}/listArticle.action">more</a></li>
-            </ul>
-        </div>
+    <#--<div class="sidebar box">-->
+        <#--&lt;#&ndash;<div class="sidebox widget">&ndash;&gt;-->
+            <#--&lt;#&ndash;<h3 class="widget-title">最近更新</h3>&ndash;&gt;-->
+            <#--&lt;#&ndash;<ul class="post-list">&ndash;&gt;-->
+                <#--&lt;#&ndash;<#list lastArticlesList as la>&ndash;&gt;-->
+                    <#--&lt;#&ndash;<li>&ndash;&gt;-->
+                        <#--&lt;#&ndash;<div class="meta">&ndash;&gt;-->
+                            <#--&lt;#&ndash;<h5><a href="${contextPath}${la.staticURL}.html">${la.title}</a></h5>&ndash;&gt;-->
+                            <#--&lt;#&ndash;<em>${la.time?string("yyyy-MM-dd HH:mm")}</em>&ndash;&gt;-->
+                        <#--&lt;#&ndash;</div>&ndash;&gt;-->
+                    <#--&lt;#&ndash;</li>&ndash;&gt;-->
+                <#--&lt;#&ndash;</#list>&ndash;&gt;-->
+                <#--&lt;#&ndash;<li class="more"><a href="${contextPath}/listArticle.action">more</a></li>&ndash;&gt;-->
+            <#--&lt;#&ndash;</ul>&ndash;&gt;-->
+        <#--&lt;#&ndash;</div>&ndash;&gt;-->
 
-        <div class="sidebox widget">
-            <h3 class="widget-title"><i class="icon-search icon"></i></h3>
-            <form class="searchform" method="post" action="${contextPath}/search.action">
-                <input type="text" name="key" value="输入关键字搜索博客..." onFocus="this.value=''" onBlur="this.value='输入关键字搜索博客...'"/>
-            </form>
-        </div>
+        <#--<div class="sidebox widget">-->
+            <#--<h3 class="widget-title"><i class="icon-search icon"></i></h3>-->
+            <#--<form class="searchform" method="post" action="${contextPath}/search.action">-->
+                <#--<input type="text" name="key" value="输入关键字搜索博客..." onFocus="this.value=''" onBlur="this.value='输入关键字搜索博客...'"/>-->
+            <#--</form>-->
+        <#--</div>-->
 
-        <div class="sidebox widget">
-            <h3 class="widget-title categories">分类</h3>
-            <ul class="categories">
-                <#list categoryList as cl>
-                    <li><a href="${contextPath}/listArticle.action?cid=${cl.cid}">${cl.cname}</a></li>
-                </#list>
-            </ul>
-        </div>
-    </div>
+        <#--&lt;#&ndash;<div class="sidebox widget">&ndash;&gt;-->
+            <#--&lt;#&ndash;<h3 class="widget-title categories">分类</h3>&ndash;&gt;-->
+            <#--&lt;#&ndash;<ul class="categories">&ndash;&gt;-->
+                <#--&lt;#&ndash;<#list categoryList as cl>&ndash;&gt;-->
+                    <#--&lt;#&ndash;<li><a href="${contextPath}/listArticle.action?cid=${cl.cid}">${cl.cname}</a></li>&ndash;&gt;-->
+                <#--&lt;#&ndash;</#list>&ndash;&gt;-->
+            <#--&lt;#&ndash;</ul>&ndash;&gt;-->
+        <#--&lt;#&ndash;</div>&ndash;&gt;-->
+    <#--</div>-->
 
     <div class="clear"></div>
 
@@ -193,7 +204,7 @@
             }
         }
 
-        xmlhttp.open("GET","${contextPath}/likeAction_getData.action?artid="+${article.artid},true);
+        xmlhttp.open("GET","${contextPath}/likeAction_ajax.action?artid="+${article.artid},true);
         xmlhttp.send();
     }
 

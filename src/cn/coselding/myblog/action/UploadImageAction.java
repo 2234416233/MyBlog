@@ -1,16 +1,11 @@
 package cn.coselding.myblog.action;
 
 import cn.coselding.myblog.utils.WebUtils;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
-
-import javax.servlet.ServletContext;
 import java.io.*;
-import java.rmi.server.ServerCloneException;
 
 /**Ajax图片上传
  * Created by 宇强 on 2016/3/12 0012.

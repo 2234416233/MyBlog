@@ -71,6 +71,7 @@ public class ListArticleAction extends ActionSupport{
         //网页中的其他信息
         Map<String,Object> params = service.getArticleListParams(request.getContextPath());
         request.setAttribute("params", params);
+        request.setAttribute("categories", params.get("categories"));
 
         return SUCCESS;
     }

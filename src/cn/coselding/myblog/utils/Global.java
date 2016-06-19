@@ -2,6 +2,7 @@ package cn.coselding.myblog.utils;
 
 import cn.coselding.myblog.domain.Article;
 import cn.coselding.myblog.domain.Category;
+import cn.coselding.myblog.service.impl.ArticleServiceImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by 宇强 on 2016/3/12 0012.
- */
+* Created by 宇强 on 2016/3/12 0012.
+*/
 public class Global {
     //订阅缓存
     public static final int RSS_TRUE = 1;
@@ -19,6 +20,8 @@ public class Global {
     //类别
     private static boolean categories_cached = false;
     public static boolean isCategories_cached() {
+        if(categories==null||categories.size()<=0)
+            return false;
         return categories_cached;
     }
     public static void setCategories_cached(boolean categories_cached) {
@@ -32,25 +35,17 @@ public class Global {
         Global.categories = categories;
     }
 
-    //最新文件
-    private static boolean isLast = false;
-    public static boolean isIsLast() {
-        return isLast;
-    }
-    public static void setIsLast(boolean isLast) {
-        Global.isLast = isLast;
-    }
-    private static List<Article> lastArticles = new ArrayList<Article>();
-    public static List<Article> getLastArticles() {
-        return lastArticles;
-    }
-    public static void setLastArticles(List<Article> lastArticles) {
-        lastArticles = lastArticles;
-    }
-
     //网页标题
     public static final Map<String,String> pageTitles = new HashMap<String, String>();
     static {
 
+    }
+
+    private static ArticleServiceImpl service = new ArticleServiceImpl();
+    public static ArticleServiceImpl getArticleService(){
+        if(service==null){
+            service = new ArticleServiceImpl();
+        }
+        return service;
     }
 }

@@ -36,10 +36,16 @@ public class RssBlogAction extends ActionSupport {
         ServletActionContext.getRequest().setAttribute("email",email);
     }
 
+    public String rssBlogUI(){
+        ServletActionContext.getRequest().setAttribute("categories", Global.getArticleService().getAllCategories());
+        return SUCCESS;
+    }
+
     //订阅
     public String rss(){
         VisitorServiceImpl service = new VisitorServiceImpl();
         service.rss(email, Global.RSS_TRUE);
+        ServletActionContext.getRequest().setAttribute("categories", Global.getArticleService().getAllCategories());
         ServletActionContext.getRequest().setAttribute("message", "订阅成功！");
         ServletActionContext.getRequest().setAttribute("url",ServletActionContext.getRequest().getContextPath()+"/index.action");
         return  "message";
@@ -49,6 +55,7 @@ public class RssBlogAction extends ActionSupport {
     public String notRss(){
         VisitorServiceImpl service = new VisitorServiceImpl();
         service.rss(email,Global.RSS_FALSE);
+        ServletActionContext.getRequest().setAttribute("categories", Global.getArticleService().getAllCategories());
         ServletActionContext.getRequest().setAttribute("message", "您已取消对本博客的订阅！");
         ServletActionContext.getRequest().setAttribute("url",ServletActionContext.getRequest().getContextPath()+"/index.action");
         return "message";

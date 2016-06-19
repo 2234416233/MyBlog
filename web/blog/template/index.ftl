@@ -42,6 +42,9 @@
                         <a href="${contextPath}/">博客</a>
                         <ul>
                             <li><a href="${contextPath}/listArticle.action">所有博文</a></li>
+                            <#list categories as cate>
+                                <li><a href="${contextPath}/listArticle.action?cid=${cate.cid}">${cate.cname}</a></li>
+                            </#list>
                         </ul>
                     </li>
                     <li>
@@ -85,9 +88,8 @@
             <div class="post format-image box">
                 <div class="details">
                     <span class="icon-image">${art.time?substring(0,16)}</span>
-            <span class="likes"><a href="#"
-                                   class="likeThis">${art.likes}</a></span>
-                    <span class="comments"><a href="#">${art.looked}</a></span>
+                    <span class="likes"><a id="likes-${art.artid}" href="#" class="likeThis">${art.likes}</a></span>
+                    <span class="comments"><a id="looked-${art.artid}" href="#">${art.looked}</a></span>
                 </div>
                 <h1 class="title"><a href="${contextPath}${art.staticURL}.html">${art.title}</a></h1>
 
@@ -133,14 +135,14 @@
             </form>
         </div>
 
-        <div class="sidebox widget">
-            <h3 class="widget-title categories">分类</h3>
-            <ul class="categories">
-                <#list categories as cate>
-                    <li><a href="${contextPath}/listArticle.action?cid=${cate.cid}">${cate.cname}</a></li>
-                </#list>
-            </ul>
-        </div>
+        <#--<div class="sidebox widget">-->
+            <#--<h3 class="widget-title categories">分类</h3>-->
+            <#--<ul class="categories">-->
+                <#--<#list categories as cate>-->
+                    <#--<li><a href="${contextPath}/listArticle.action?cid=${cate.cid}">${cate.cname}</a></li>-->
+                <#--</#list>-->
+            <#--</ul>-->
+        <#--</div>-->
     </div>
 </div>
 
@@ -160,4 +162,38 @@
 <script type="text/javascript" src="${contextPath}/style/js/scripts.js"></script>
 
 </body>
+<#--<script type="text/javascript">-->
+    <#--window.onload = function(){-->
+        <#--refresh();-->
+    <#--};-->
+
+    <#--function refresh(){-->
+        <#--var xmlhttp;-->
+        <#--if (window.XMLHttpRequest)-->
+        <#--{// code for IE7+, Firefox, Chrome, Opera, Safari-->
+            <#--xmlhttp=new XMLHttpRequest();-->
+        <#--}-->
+        <#--else-->
+        <#--{// code for IE6, IE5-->
+            <#--xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");-->
+        <#--}-->
+
+        <#--xmlhttp.onreadystatechange=function()-->
+        <#--{-->
+            <#--if (xmlhttp.readyState==4 && xmlhttp.status==200)-->
+            <#--{-->
+                <#--var text = xmlhttp.responseText.split(";");-->
+
+                <#--var looked = document.getElementById("looked");-->
+                <#--looked.innerHTML = "<i class='icon-eye-open'></i> "+text[0]+" 已阅";-->
+
+                <#--var likes = document.getElementById("likes");-->
+                <#--likes.innerHTML = "<i class='icon-heart-empty'></i> "+text[1]+" 喜爱";-->
+            <#--}-->
+        <#--}-->
+
+        <#--xmlhttp.open("GET","${contextPath}/likeAction_ajax.action?artid="+${article.artid},true);-->
+        <#--xmlhttp.send();-->
+    <#--}-->
+<#--</script>-->
 </html>

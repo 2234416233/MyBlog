@@ -23,6 +23,9 @@
             <a href="${pageContext.request.contextPath}/">博客</a>
             <ul>
               <li><a href="${pageContext.request.contextPath}/listArticle.action">所有博文</a></li>
+              <c:forEach items="${categories}" var="cate">
+                <li><a href="${pageContext.request.contextPath}/listArticle.action?cid=${cate.cid}">${cate.cname}</a></li>
+              </c:forEach>
             </ul>
           </li>
           <li>

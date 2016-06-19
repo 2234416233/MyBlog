@@ -45,7 +45,7 @@ public class ArticleServiceImpl {
 
             List<Category> list = categoryDao.queryAll();
             Global.setCategories(list);
-            Global.setCategories_cached(false);
+            Global.setCategories_cached(true);
 
             JdbcUtils.commit();
             return list;
@@ -75,7 +75,7 @@ public class ArticleServiceImpl {
                 categoryDao.saveCategory(category);
                 List<Category> list = categoryDao.queryAll();
                 Global.setCategories(list);
-                Global.setCategories_cached(false);
+                Global.setCategories_cached(true);
                 result = true;
             }
             JdbcUtils.commit();
@@ -99,6 +99,7 @@ public class ArticleServiceImpl {
             JdbcUtils.startTransaction();
             categoryDao.deleteCategory(cid);
             Global.setCategories(categoryDao.queryAll());
+            Global.setCategories_cached(true);
             JdbcUtils.commit();
             return true;
         } catch (SQLException e) {
@@ -149,6 +150,7 @@ public class ArticleServiceImpl {
             temp.setCname(category.getCname());
             categoryDao.updateCategory(temp);
             Global.setCategories(categoryDao.queryAll());
+            Global.setCategories_cached(true);
 
             JdbcUtils.commit();
         } catch (SQLException e) {
@@ -216,7 +218,7 @@ public class ArticleServiceImpl {
             //静态化页面
             List<Category> list = categoryDao.queryAll();
             Global.setCategories(list);
-            Global.setCategories_cached(false);
+            Global.setCategories_cached(true);
 
             //静态化路径
             article.setStaticURL("/blog/" + article.getCid() + "/" + article.getCid() + "-" + artid);
@@ -283,7 +285,7 @@ public class ArticleServiceImpl {
             else
                 // 根据传递的页号查找所需显示数据
                 page = new Page<Article>(totalrecord, Integer.parseInt(pagenum));
-            List<Article> list = articleDao.getPageData("cid=?", new Object[]{cid}, page.getStartindex(),
+            List<Article> list = articleDao.getPageData("a.cid=?", new Object[]{cid}, page.getStartindex(),
                     page.getPagesize());
             page.setList(list);
             page.setUrl(url);
@@ -355,7 +357,7 @@ public class ArticleServiceImpl {
             else
                 // 根据传递的页号查找所需显示数据
                 page = new Page<Article>(totalrecord, Integer.parseInt(pagenum));
-            List<Article> list = articleDao.queryArticleBySQL("select artid,time,author,cid,title,staticURL,top from article where title like '%" + key + "%' order by top desc,time desc limit ?,?;", new Object[]{page.getStartindex(), page.getPagesize()});
+            List<Article> list = articleDao.queryArticleBySQL("select artid,time,author,a.cid,title,staticURL,top,looked,likes,c.cname from article a,category c where a.cid=c.cid and title like '%" + key + "%' order by top desc,time desc limit ?,?;", new Object[]{page.getStartindex(), page.getPagesize()});
             page.setList(list);
             page.setUrl(url);
 
@@ -454,7 +456,7 @@ public class ArticleServiceImpl {
 
             List<Category> list = categoryDao.queryAll();
             Global.setCategories(list);
-            Global.setCategories_cached(false);
+            Global.setCategories_cached(true);
 
             //静态化路径
             article.setStaticURL("/blog/" + article.getCid() + "/" + article.getCid() + "-" + article.getArtid());
@@ -499,17 +501,6 @@ public class ArticleServiceImpl {
             //本文章的类别
             Category category = categoryDao.queryCategory(articles.get(0).getCid());
 
-            //最新三篇文章
-            List<Article> lastArticles = null;
-            //先查缓存
-            if (Global.isIsLast())
-                lastArticles = Global.getLastArticles();
-            else {
-                lastArticles = articleDao.queryArticleBySQL("select title,time,artid,cid,staticURL from article order by time desc limit 0,3", null);
-                Global.setLastArticles(lastArticles);
-                Global.setIsLast(false);
-            }
-
             //所有类别
             List<Category> categories = null;
             //先查缓存
@@ -518,7 +509,7 @@ public class ArticleServiceImpl {
             else {
                 categories = categoryDao.queryAll();
                 Global.setCategories(categories);
-                Global.setCategories_cached(false);
+                Global.setCategories_cached(true);
             }
 
             //下一篇
@@ -554,7 +545,6 @@ public class ArticleServiceImpl {
             //封装模版所需参数
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("article", articles.get(0));
-            params.put("lastArticlesList", lastArticles);
             params.put("categoryList", categories);
             params.put("nextArticle", next);
             params.put("lastArticle", last);
@@ -587,17 +577,6 @@ public class ArticleServiceImpl {
             //本文章的类别
             Category category = categoryDao.queryCategory(articles.get(0).getCid());
 
-            //最新三篇文章
-            List<Article> lastArticles = null;
-            //先查缓存
-            if (Global.isIsLast())
-                lastArticles = Global.getLastArticles();
-            else {
-                lastArticles = articleDao.queryArticleBySQL("select title,time,artid,cid,staticURL from article order by time desc limit 0,3", null);
-                Global.setLastArticles(lastArticles);
-                Global.setIsLast(false);
-            }
-
             //所有类别
             List<Category> categories = null;
             //先查缓存
@@ -606,7 +585,7 @@ public class ArticleServiceImpl {
             else {
                 categories = categoryDao.queryAll();
                 Global.setCategories(categories);
-                Global.setCategories_cached(false);
+                Global.setCategories_cached(true);
             }
 
             //下一篇
@@ -642,7 +621,6 @@ public class ArticleServiceImpl {
             //封装模版所需参数
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("article", articles.get(0));
-            params.put("lastArticlesList", lastArticles);
             params.put("categoryList", categories);
             params.put("nextArticle", next);
             params.put("lastArticle", last);
@@ -669,15 +647,7 @@ public class ArticleServiceImpl {
             JdbcUtils.setReadOnly();
 
             //最新三篇文章
-            List<Article> lastArticles = null;
-            //先查缓存
-            if (Global.isIsLast())
-                lastArticles = Global.getLastArticles();
-            else {
-                lastArticles = articleDao.queryArticleBySQL("select title,time,artid,cid,staticURL from article order by time desc limit 0,3", null);
-                Global.setLastArticles(lastArticles);
-                Global.setIsLast(false);
-            }
+            List<Article> lastArticles = articleDao.queryArticleBySQL("select title,time,artid,cid,staticURL from article order by time desc limit 0,3", null);
 
             //列表顶置四篇文章
             List<Article> topArticles = articleDao.queryArticleBySQL("select title,time,looked,likes,meta,type,artid,cname,author,c.cid,staticURL from article a,category c where a.cid=c.cid order by top desc,time desc limit 0,4", null);
@@ -690,14 +660,14 @@ public class ArticleServiceImpl {
             else {
                 categories = categoryDao.queryAll();
                 Global.setCategories(categories);
-                Global.setCategories_cached(false);
+                Global.setCategories_cached(true);
             }
 
             //封装模版所需参数
             Map<String, Object> params = new HashMap<String, Object>();
-            params.put("lastArticlesList", lastArticles);
             params.put("categories", categories);
             params.put("topArticles", topArticles);
+            params.put("lastArticlesList", lastArticles);
 
             //提交事务
             JdbcUtils.commit();

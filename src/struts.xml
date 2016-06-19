@@ -43,8 +43,9 @@
                         <param name="method">comment</param>
                 </action>
                 <!-- 访客订阅 -->
-                <action name="rssBlogUI">
-                        <result>/WEB-INF/jsp/rss.jsp</result>
+                <action name="rssBlogUI" class="cn.coselding.myblog.action.RssBlogAction" method="rssBlogUI">
+                        <result name="success">/WEB-INF/jsp/rss.jsp</result>
+                        <result name="input">/WEB-INF/jsp/rss.jsp</result>
                 </action>
                 <action name="rss" class="cn.coselding.myblog.action.RssBlogAction" method="rss">
                         <result name="input">/WEB-INF/jsp/rss.jsp</result>

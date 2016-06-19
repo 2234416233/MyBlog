@@ -3,6 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+    <listener>
+        <listener-class>cn.coselding.myblog.listener.TimeListener</listener-class>
+    </listener>
+
     <!-- 中文编码过滤器 -->
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
@@ -94,7 +98,7 @@
         <location>/public/404.html</location>
     </error-page>
     <error-page>
-        <error-code>506</error-code>
+        <error-code>500</error-code>
         <location>/public/500.html</location>
     </error-page>
     <error-page>
@@ -105,8 +109,8 @@
         <error-code>505</error-code>
         <location>/public/500.html</location>
     </error-page>
-	
+
     <welcome-file-list>
-        <welcome-file>index.action</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 </web-app>

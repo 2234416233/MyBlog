@@ -123,7 +123,7 @@ public class ServiceUtils {
                 dir.mkdir();
 
             FileOutputStream fos = new FileOutputStream(path);
-            TemplateUtils.parserTemplate(realPath, "/template/template.ftl", params, fos);
+            TemplateUtils.parserTemplate(realPath+"/template", "/template.ftl", params, fos);
             fos.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

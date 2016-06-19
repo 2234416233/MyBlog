@@ -5,6 +5,7 @@ import cn.coselding.myblog.domain.Guest;
 import cn.coselding.myblog.domain.Page;
 import cn.coselding.myblog.email.JavaMailWithAttachment;
 import cn.coselding.myblog.service.impl.VisitorServiceImpl;
+import cn.coselding.myblog.utils.Global;
 import com.opensymphony.xwork2.ActionSupport;
 import com.sun.org.apache.xml.internal.security.c14n.implementations.Canonicalizer20010315OmitComments;
 import org.apache.struts2.ServletActionContext;
@@ -127,6 +128,7 @@ public class CommentAction extends ActionSupport{
             String email = comment.getGemail().substring(0,2)+"******"+comment.getGemail().substring(comment.getGemail().lastIndexOf("@")-1);
             comment.setGemail(email);
         }
+        ServletActionContext.getRequest().setAttribute("categories", Global.getArticleService().getAllCategories());
         ServletActionContext.getRequest().setAttribute("page", page);
         return SUCCESS;
     }
@@ -153,6 +155,7 @@ public class CommentAction extends ActionSupport{
         //返回更新后的留言信息
         String url = ServletActionContext.getRequest().getContextPath()+"/commentUI.action";
         Page<Comment> page = service.findComments(pagenum,url);
+        ServletActionContext.getRequest().setAttribute("categories", Global.getArticleService().getAllCategories());
         ServletActionContext.getRequest().setAttribute("page", page);
         return SUCCESS;
     }
