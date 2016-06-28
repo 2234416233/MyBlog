@@ -156,4 +156,11 @@ public class CommentAction extends ActionSupport{
         ServletActionContext.getRequest().setAttribute("page", page);
         return SUCCESS;
     }
+
+    public String close(){
+        String url = ServletActionContext.getRequest().getContextPath();
+        ServletActionContext.getRequest().setAttribute("message", "留言板暂不可用，等待后期维护...");
+        ServletActionContext.getRequest().setAttribute("url", url);
+        return "message";
+    }
 }

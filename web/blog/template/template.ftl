@@ -52,7 +52,8 @@
                         <a href="http://blog.csdn.net/u014394255" title="进入我的CSDN博客">CSDN博客</a>
                     </li>
                     <li>
-                        <a href="${#addComment#}" title="给我留言">留言板</a>
+                        <a href="/comment_close.action" title="给我留言">留言板</a>
+                        <#--<a href="${#addComment#}" title="给我留言">留言板</a>-->
                     </li>
                     <li><a href="#">Menu</a>
                         <ul>
