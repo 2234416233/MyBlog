@@ -158,7 +158,7 @@ public class CommentAction extends ActionSupport{
     }
 
     public String close(){
-        String url = ServletActionContext.getRequest().getContextPath();
+        String url = ServletActionContext.getRequest().getContextPath()+"/index.action";
         ServletActionContext.getRequest().setAttribute("message", "留言板暂不可用，等待后期维护...");
         ServletActionContext.getRequest().setAttribute("url", url);
         return "message";
