@@ -51,10 +51,10 @@
                     <li>
                         <a href="http://blog.csdn.net/u014394255" title="进入我的CSDN博客">CSDN博客</a>
                     </li>
-                    <li>
-                        <a href="/comment_close.action" title="给我留言">留言板</a>
+                    <#--<li>-->
+                        <#--<a href="/comment_close.action" title="给我留言">留言板</a>-->
                         <#--<a href="${#addComment#}" title="给我留言">留言板</a>-->
-                    </li>
+                    <#--</li>-->
                     <li><a href="#">Menu</a>
                         <ul>
                             <li><a href="/s/">短网址</a></li>
@@ -97,7 +97,7 @@
             <div>
                 <a id="likes" href="javascript:like('${#contextPath#}/likeAction.action?artid=${artid}')"><i class="icon-heart-empty"></i> ${likes} 喜爱</a>
             </div>
-            <a class="comment-btn" href="javascript:onComment('/comment_close.action')"><i class="icon-comments"></i> 给我留言</a>
+            <#--<a class="comment-btn" href="javascript:onComment('/comment_close.action')"><i class="icon-comments"></i> 给我留言</a>-->
             <#--<a class="comment-btn" href="javascript:onComment('${#addComment#}')"><i class="icon-comments"></i> 给我留言</a>-->
         </div>
         <div class="last-next">

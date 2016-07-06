@@ -31,9 +31,9 @@
           <li>
             <a href="http://blog.csdn.net/u014394255" title="进入我的CSDN博客">CSDN博客</a>
           </li>
-          <li>
-            <a href="${pageContext.request.contextPath}/comment_close.action" title="给我留言">留言板</a>
-          </li>
+          <%--<li>--%>
+            <%--<a href="${pageContext.request.contextPath}/comment_close.action" title="给我留言">留言板</a>--%>
+          <%--</li>--%>
           <li><a href="#">Menu</a>
             <ul>
               <li><a href="/s/">短网址</a></li>
