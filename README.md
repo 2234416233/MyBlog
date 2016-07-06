@@ -1,7 +1,7 @@
 # MyBlog
 个人博客源码，博客原网址：http://www.coselding.cn 。
 
-之前没注意啊，今天发现这个项目多了好多个Star和Fork，真是承蒙厚爱啊！！！  
+之前没注意啊，今天发现这个项目多了好多个Star和Fork，真是承蒙厚爱啊！！！
 该项目的完全静态化分支分离创建了一个全新的项目，请前往新项目~[https://github.com/Coselding/Hamster](https://github.com/Coselding/Hamster)  
 
 **PS：这里简要说明一下该项目和Hamster的全静态化的项目的区别：**  
